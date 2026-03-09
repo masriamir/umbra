@@ -1,7 +1,7 @@
 from django.db import models
 
-from todo.models.validators import HexCodeValidator
 from todo.models.core import EFBase
+from todo.models.validators import HexCodeValidator
 
 
 class Color(EFBase):

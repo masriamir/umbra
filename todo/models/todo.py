@@ -1,8 +1,8 @@
 from django.db import models
 
-from .tag import Tag
 from .color import Color
 from .core import EFBase
+from .tag import Tag
 
 
 class TodoList(EFBase):

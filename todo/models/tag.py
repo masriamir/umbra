@@ -1,7 +1,8 @@
 from django.db import models
 
-from .color import Color
 from todo.models.core import EFBase
+
+from .color import Color
 
 
 class Tag(EFBase):
