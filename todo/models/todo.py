@@ -15,7 +15,7 @@ class TodoList(EFBase):
         get_latest_by = 'created_date'
         ordering = ['name']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.name} [{self.color}]'
 
 
