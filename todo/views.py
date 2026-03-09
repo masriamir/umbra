@@ -26,7 +26,9 @@ class ColorViewSet(viewsets.ModelViewSet):
             return super().destroy(request, *args, **kwargs)
         except ProtectedError:
             return Response(
-                {"detail": "This color is in use by a list or tag and cannot be deleted."},
+                {
+                    "detail": "This color is in use by a list or tag and cannot be deleted."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -64,7 +66,9 @@ class TodoItemViewSet(viewsets.ModelViewSet):
     def reorder(self, request: Request, list_pk: int | None = None) -> Response:
         order = request.data.get("order", [])
         if not isinstance(order, list) or not all(isinstance(i, int) for i in order):
-            raise drf_serializers.ValidationError({"order": "Must be a list of integer IDs."})
+            raise drf_serializers.ValidationError(
+                {"order": "Must be a list of integer IDs."}
+            )
 
         items = list(TodoItem.objects.filter(list_id=list_pk, pk__in=order))
         if len(items) != len(order):

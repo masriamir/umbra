@@ -9,9 +9,9 @@ class Tag(EFBase):
     color = models.ForeignKey(Color, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = 'tag'
-        get_latest_by = 'created_date'
-        ordering = ['name']
+        db_table = "tag"
+        get_latest_by = "created_date"
+        ordering = ["name"]
 
     def __str__(self) -> str:
-        return f'{self.name} [{self.color}]'
+        return f"{self.name} [{self.color}]"

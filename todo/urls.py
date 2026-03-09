@@ -18,6 +18,12 @@ item_reorder = views.TodoItemViewSet.as_view({"post": "reorder"})
 urlpatterns = [
     path("", include(router.urls)),
     path("lists/<int:list_pk>/items/", item_list, name="todolist-items-list"),
-    path("lists/<int:list_pk>/items/reorder/", item_reorder, name="todolist-items-reorder"),
-    path("lists/<int:list_pk>/items/<int:pk>/", item_detail, name="todolist-items-detail"),
+    path(
+        "lists/<int:list_pk>/items/reorder/",
+        item_reorder,
+        name="todolist-items-reorder",
+    ),
+    path(
+        "lists/<int:list_pk>/items/<int:pk>/", item_detail, name="todolist-items-detail"
+    ),
 ]
