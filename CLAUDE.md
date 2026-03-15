@@ -6,41 +6,53 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Package manager:** `uv` (not pip) for Python, `npm` for the frontend.
 
+A `Makefile` is provided at the repo root. Run `make help` to list all targets. Key targets:
+
 ```bash
-# Run Django API server
-uv run python manage.py runserver
+# Dependencies
+make install            # Install backend + frontend dependencies
+make install-backend    # uv sync
+make install-frontend   # npm install in frontend/
 
-# Apply migrations
-uv run python manage.py migrate
+# Development servers
+make dev                # Run API + frontend concurrently (Ctrl+C stops both)
+make api                # Django API server only
+make frontend           # Vite dev server only
 
-# Create migrations
-uv run python manage.py makemigrations
+# Django management
+make migrate            # Apply pending migrations
+make migrations         # Generate migrations for model changes
+make shell              # Open Django shell
+make superuser          # Create a Django superuser
 
-# Run all tests
-uv run pytest
+# Testing
+make test               # Run all tests
+make test-unit          # Unit tests only  (-m unit)
+make test-integration   # Integration tests only  (-m integration)
+make test-cov           # Tests with coverage report
+make test-watch         # Re-run tests on file changes (ptw)
 
-# Run a single test file or test
-uv run pytest todo/tests/test_something.py
-uv run pytest todo/tests/test_something.py::TestClass::test_method
+# Code quality
+make check              # lint + format-check + typecheck (no files modified)
+make fix                # Auto-fix lint issues and reformat
+make lint               # ruff check (report only)
+make lint-fix           # ruff check --fix
+make format             # ruff format
+make format-check       # ruff format --check
+make typecheck          # mypy
 
-# Run only unit or integration tests (via markers)
-uv run pytest -m unit
-uv run pytest -m integration
-
-# Lint
-uv run ruff check .
-
-# Format
-uv run ruff format .
-
-# Type check
-uv run mypy .
+# Build & clean
+make build              # Production frontend build
+make clean              # Remove build artifacts and caches
+make clean-all          # Remove artifacts + .venv + node_modules
 ```
 
+You can still run commands directly if needed:
+
 ```bash
-# Frontend (from frontend/)
-npm run dev      # Start Vite dev server at http://localhost:5173
-npm run build    # Production build
+# Run a single test file or specific test
+uv run pytest todo/tests/test_something.py
+uv run pytest todo/tests/test_something.py::TestClass::test_method
 ```
 
 ## Architecture
