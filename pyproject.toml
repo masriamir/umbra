@@ -8,12 +8,12 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "django>=5.1.7,<6.0.0",
-    "psycopg[binary]>=3.2.6,<4.0.0",
-    "django-environ>=0.12.0,<0.13.0",
-    "djangorestframework>=3.16.0,<4.0.0",
-    "django-cors-headers>=4.0.0,<5.0.0",
-    "icalendar>=7.0.3",
+    "django>=5.2.11,<6.0.0",
+    "psycopg[binary]>=3.3.3,<4.0.0",
+    "django-environ>=0.13.0,<1.0.0",
+    "djangorestframework>=3.17.1,<4.0.0",
+    "django-cors-headers>=4.9.0,<5.0.0",
+    "icalendar>=7.0.3,<8.0.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -33,9 +33,9 @@ Issues = "https://github.com/masriamir/ef-todo/issues"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.14.5,<1.0.0",  # Linting and formatting
-    "mypy>=1.18.2,<2.0.0",  # Type checking
-    "types-aiofiles>=24.1.0",  # Type stubs for aiofiles
+    "ruff>=0.15.8,<1.0.0",  # Linting and formatting
+    "mypy>=1.19.1,<2.0.0",  # Type checking
+    "types-aiofiles>=25.1.0.20251011,<26.0.0",  # Type stubs for aiofiles
 ]
 
 test = [
