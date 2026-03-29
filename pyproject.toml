@@ -27,7 +27,6 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Internet :: WWW/HTTP :: WSGI",
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-    "Topic :: Internet :: WWW/HTTP :: ASGI",
     "Topic :: Office/Business :: Scheduling",
 ]
 license = "MIT"
@@ -51,6 +50,7 @@ dev = [
 
 test = [
     "pytest>=9.0.2,<10.0.0",  # Testing framework
+    "pytest-django>=4.12.0,<5.0.0",  # Django integration for pytest
     "pytest-cov>=7.1.0,<8.0.0",  # Coverage reporting
     "pytest-watch>=4.2.0,<5.0.0",  # Watch mode for tests
     "pytest-asyncio>=1.3.0,<2.0.0",  # Async test support
@@ -122,12 +122,12 @@ line-ending = "auto"
 docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
-# [tool.ruff.lint.per-file-ignores]
-# "tests/**" = [
-#     "S101",  # assert statements
-#     "PLR2004",  # Magic value comparisons in tests
-#     "PLC0415",  # Import not at top level (common in tests)
-# ]
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "S101",  # assert statements
+    "PLR2004",  # Magic value comparisons in tests
+    "PLC0415",  # Import is not at top level
+]
 
 [tool.ruff.lint.isort]
 known-first-party = [

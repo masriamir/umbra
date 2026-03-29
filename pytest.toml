@@ -1,6 +1,7 @@
 [pytest]
 minversion = "9.0.0"
 strict = true
+DJANGO_SETTINGS_MODULE = "ef_todo.settings"
 
 # Test discovery
 testpaths = [

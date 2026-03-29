@@ -68,12 +68,15 @@ class TodoItemSerializer(serializers.ModelSerializer):
 
     def run_validators(self, value: dict[str, Any]) -> None:
         # `title` has `unique_for_date="created_date"`, which causes DRF to generate
-        # a UniqueForDateValidator that requires `created_date` to be present in the
-        # validated data. Because `created_date` is read-only it is never included in
-        # `attrs`, so we inject it here before validators run.
-        if "created_date" not in value:
-            if self.instance is not None:
+        # a UniqueForDateValidator. DRF 3.17+ calls enforce_required_fields()
+        # unconditionally, requiring both `title` and `created_date` to be present
+        # even on partial updates. Inject missing fields from the instance so the
+        # validator can run without erroring on unrelated partial patches.
+        if self.instance is not None:
+            if "title" not in value:
+                value = {**value, "title": self.instance.title}
+            if "created_date" not in value:
                 value = {**value, "created_date": self.instance.created_date}
-            else:
-                value = {**value, "created_date": timezone.now()}
+        elif "created_date" not in value:
+            value = {**value, "created_date": timezone.now()}
         super().run_validators(value)
