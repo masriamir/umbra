@@ -11,6 +11,7 @@ A todo web application designed to aid people with ADHD who experience disrupted
 - [Local Development](#local-development)
 - [Environment Variables](#environment-variables)
 - [Makefile Reference](#makefile-reference)
+- [Versioning](#versioning)
 - [Testing](#testing)
 - [Code Quality](#code-quality)
 - [API Reference](#api-reference)
@@ -53,12 +54,12 @@ A todo web application designed to aid people with ADHD who experience disrupted
 | Technology | Version | Purpose |
 |---|---|---|
 | Python | 3.13 | Runtime |
-| Django | 5.1+ | Web framework |
-| Django REST Framework | 3.16+ | REST API |
+| Django | 5.2+ | Web framework |
+| Django REST Framework | 3.17+ | REST API |
 | PostgreSQL | — | Database |
-| psycopg | 3.2+ | PostgreSQL driver |
-| django-environ | 0.12+ | Environment config |
-| django-cors-headers | 4.0+ | CORS handling |
+| psycopg | 3.3+ | PostgreSQL driver |
+| django-environ | 0.13+ | Environment config |
+| django-cors-headers | 4.9+ | CORS handling |
 | uv | 0.9.9+ | Dependency management |
 
 ### Frontend
@@ -265,12 +266,62 @@ make format-check       # ruff format --check (check only)
 make typecheck          # mypy static type check
 ```
 
+### Versioning
+
+```bash
+make version-major      # Tag a new major version (vX.0.0) — resets minor and revision
+make version-minor      # Tag a new minor version (vx.Y.0) — resets revision
+make version-revision   # Tag a new revision     (vx.y.Z)
+```
+
 ### Build & Clean
 
 ```bash
 make build              # Production frontend build  → frontend/dist/
 make clean              # Remove build artifacts and caches
 make clean-all          # Remove artifacts + .venv + node_modules
+```
+
+---
+
+## Versioning
+
+The project uses [hatch-vcs](https://github.com/ofek/hatch-vcs) to derive its version dynamically from annotated git tags. There is no static version string in `pyproject.toml` — the version is resolved at build time from the most recent tag reachable in git history.
+
+Tags follow the `vMAJOR.MINOR.REVISION` format (e.g. `v1.2.3`).
+
+### Bumping the version
+
+Use the Makefile targets to increment the appropriate segment and create the annotated tag in one step:
+
+```bash
+make version-major      # v1.4.2 → v2.0.0  (breaking change)
+make version-minor      # v1.4.2 → v1.5.0  (new feature)
+make version-revision   # v1.4.2 → v1.4.3  (bug fix / patch)
+```
+
+Each target reads the latest tag, increments the correct number, and runs:
+
+```bash
+git tag -a "vX.Y.Z" -m "Version X.Y.Z"
+```
+
+Push the tag to the remote when ready:
+
+```bash
+git push origin vX.Y.Z
+```
+
+### Development builds
+
+Commits made after a tag resolve to a dev version string such as `1.4.2.dev5+gabcdef0`, indicating 5 commits past `v1.4.2`. This is handled automatically by `hatch-vcs` and requires no manual action.
+
+### Initial tag
+
+If no tags exist yet, the version resolves to a dev build against `0.0.0`. Create the first tag to establish a baseline:
+
+```bash
+git tag -a "v0.1.0" -m "Version 0.1.0"
 ```
 
 ---

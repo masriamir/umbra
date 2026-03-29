@@ -112,6 +112,35 @@ check: lint format-check typecheck ## Run all quality checks (no files modified)
 .PHONY: fix
 fix: lint-fix format ## Auto-fix lint issues and reformat code
 
+# ── Versioning ─────────────────────────────────────────────────────────────────
+
+.PHONY: version-major
+version-major: ## Tag a new major version (vX.0.0) — resets minor and revision
+	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0"); \
+	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
+	NEW=$$((MAJOR+1)).0.0; \
+	git tag -a "v$$NEW" -m "Version $$NEW"; \
+	echo "Tagged v$$NEW"
+
+.PHONY: version-minor
+version-minor: ## Tag a new minor version (vx.Y.0) — resets revision
+	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0"); \
+	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
+	MINOR=$$(echo "$$CURRENT" | cut -d. -f2); \
+	NEW=$$MAJOR.$$((MINOR+1)).0; \
+	git tag -a "v$$NEW" -m "Version $$NEW"; \
+	echo "Tagged v$$NEW"
+
+.PHONY: version-revision
+version-revision: ## Tag a new revision (vx.y.Z)
+	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0"); \
+	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
+	MINOR=$$(echo "$$CURRENT" | cut -d. -f2); \
+	REVISION=$$(echo "$$CURRENT" | cut -d. -f3); \
+	NEW=$$MAJOR.$$MINOR.$$((REVISION+1)); \
+	git tag -a "v$$NEW" -m "Version $$NEW"; \
+	echo "Tagged v$$NEW"
+
 # ── Build ──────────────────────────────────────────────────────────────────────
 
 .PHONY: build

@@ -1,6 +1,6 @@
 [project]
 name = "ef-todo"
-version = "0.1.0"
+dynamic = ["version"]
 description = "A ToDo web application to aid in disrupted executive functioning due to ADHD."
 authors = [
     { name = "Amir Masri", email = "masriamir@users.noreply.github.com" },
@@ -30,6 +30,10 @@ license-files = ["LICEN[CS]E*"]
 Homepage = "https://github.com/masriamir/ef-todo"
 Repository = "https://github.com/masriamir/ef-todo"
 Issues = "https://github.com/masriamir/ef-todo/issues"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
@@ -143,6 +147,9 @@ required-version = ">=0.9.9,<1.0.0"
 
 [tool.uv.pip]
 python-version = "3.13"
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "double"
