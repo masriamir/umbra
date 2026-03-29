@@ -347,6 +347,11 @@ Tests use [pytest](https://pytest.org) with the following markers:
 | `api` | API endpoint tests |
 | `slow` | Tests that take longer to run |
 | `database` | Tests requiring a database connection |
+| `network` | Tests requiring network access |
+| `ui` | UI component tests |
+| `smoke` | Basic smoke tests for critical functionality |
+| `concurrent` | Tests involving concurrent execution |
+| `load` | Load and performance tests |
 
 ```bash
 # Run all tests
