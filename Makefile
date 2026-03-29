@@ -124,7 +124,8 @@ fix: lint-fix format ## Auto-fix lint issues and reformat code
 
 .PHONY: version-major
 version-major: ## Tag a new major version (vX.0.0) — resets minor and revision
-	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0"); \
+	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//'); \
+	CURRENT=$${CURRENT:-0.0.0}; \
 	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
 	NEW=$$((MAJOR+1)).0.0; \
 	git tag -a "v$$NEW" -m "Version $$NEW"; \
@@ -132,7 +133,8 @@ version-major: ## Tag a new major version (vX.0.0) — resets minor and revision
 
 .PHONY: version-minor
 version-minor: ## Tag a new minor version (vx.Y.0) — resets revision
-	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0"); \
+	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//'); \
+	CURRENT=$${CURRENT:-0.0.0}; \
 	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
 	MINOR=$$(echo "$$CURRENT" | cut -d. -f2); \
 	NEW=$$MAJOR.$$((MINOR+1)).0; \
@@ -141,7 +143,8 @@ version-minor: ## Tag a new minor version (vx.Y.0) — resets revision
 
 .PHONY: version-revision
 version-revision: ## Tag a new revision (vx.y.Z)
-	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0"); \
+	@CURRENT=$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//'); \
+	CURRENT=$${CURRENT:-0.0.0}; \
 	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
 	MINOR=$$(echo "$$CURRENT" | cut -d. -f2); \
 	REVISION=$$(echo "$$CURRENT" | cut -d. -f3); \
