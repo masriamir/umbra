@@ -122,8 +122,11 @@ docstring-code-line-length = "dynamic"
 #     "PLC0415",  # Import not at top level (common in tests)
 # ]
 
-# [tool.ruff.lint.isort]
-# known-first-party = ["src"]
+[tool.ruff.lint.isort]
+known-first-party = [
+    "todo",
+    "ef_todo",
+]
 
 [tool.uv]
 cache-keys = [
