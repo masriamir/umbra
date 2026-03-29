@@ -34,6 +34,14 @@ A todo web application designed to aid people with ADHD who experience disrupted
 - Reorder items via drag and drop — order is persisted to the server
 - Apply multiple color-coded tags per item
 - Set a priority for manual ordering
+- Set an importance level (High, Medium, Low) per item
+- Set a duration in minutes used when exporting to a calendar
+
+### Calendar Export
+- Export an entire list as an iCalendar (`.ics`) file — includes all incomplete items that have a due date
+- Export a single item as an iCalendar (`.ics`) file
+- Each calendar event includes the item title, due date, duration (defaults to 30 minutes), importance, tags as categories, and a structured description
+- Importance maps to RFC 5545 `PRIORITY` values for compatible calendar apps
 
 ### Tags
 - Create reusable tags with associated colors
@@ -60,6 +68,7 @@ A todo web application designed to aid people with ADHD who experience disrupted
 | psycopg | 3.3+ | PostgreSQL driver |
 | django-environ | 0.13+ | Environment config |
 | django-cors-headers | 4.9+ | CORS handling |
+| icalendar | 7.0+ | iCalendar (.ics) generation |
 | uv | 0.9.9+ | Dependency management |
 
 ### Frontend
@@ -416,8 +425,10 @@ All endpoints are under `/api/`. The Django admin interface is available at `/ad
 | `GET` / `PATCH` / `DELETE` | `/api/tags/:id/` | Retrieve, update, or delete a tag |
 | `GET` / `POST` | `/api/lists/` | List or create todo lists |
 | `GET` / `PATCH` / `DELETE` | `/api/lists/:id/` | Retrieve, update, or delete a list |
+| `GET` | `/api/lists/:id/export/` | Export list as `.ics` (incomplete items with a due date) |
 | `GET` / `POST` | `/api/lists/:id/items/` | List or create items within a list |
 | `GET` / `PATCH` / `DELETE` | `/api/lists/:id/items/:item_id/` | Retrieve, update, or delete an item |
+| `GET` | `/api/lists/:id/items/:item_id/export/` | Export a single item as `.ics` (requires a due date) |
 | `POST` | `/api/lists/:id/items/reorder/` | Atomic batch reorder: `{ "order": [id, ...] }` |
 
 ---
@@ -442,11 +453,14 @@ TodoList
 └── color  ──FK──> Color (PROTECT)
 
 TodoItem
-├── title       (max 64 chars)
-├── description (optional, max 256 chars)
-├── due_date    (optional datetime)
-├── completed   (boolean)
-├── priority    (positive integer, for ordering)
+├── title            (max 64 chars)
+├── description      (optional, max 256 chars)
+├── due_date         (optional datetime)
+├── duration_minutes (optional positive integer, defaults to 30 for calendar export)
+├── importance       (integer choice: None=0, High=1, Medium=5, Low=9 — RFC 5545 PRIORITY)
+├── completed        (boolean)
+├── synced           (boolean)
+├── priority         (positive integer, for ordering)
 ├── list   ──FK──> TodoList (CASCADE)
 └── tags   ──M2M──> Tag (via TodoItemTag)
 
