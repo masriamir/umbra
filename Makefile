@@ -77,8 +77,16 @@ test-integration: ## Run integration tests only
 	$(PYTEST) -m integration
 
 .PHONY: test-cov
-test-cov: ## Run tests and print a coverage report
-	$(PYTEST) --cov --cov-report=term-missing
+test-cov: ## Run tests with coverage — enforces 80% minimum, outputs to reports/coverage/
+	@mkdir -p reports/coverage
+	$(PYTEST) \
+		--cov=todo \
+		--cov-report=term-missing \
+		--cov-report=html:reports/coverage/html \
+		--cov-report=xml:reports/coverage/coverage.xml \
+		--cov-report=json:reports/coverage/coverage.json \
+		--cov-report=lcov:reports/coverage/coverage.lcov \
+		--cov-fail-under=80
 
 .PHONY: test-watch
 test-watch: ## Re-run tests automatically on file changes
@@ -151,7 +159,7 @@ build: ## Build the frontend for production
 
 .PHONY: clean
 clean: ## Remove build artifacts and caches
-	rm -rf frontend/dist .mypy_cache .ruff_cache .pytest_cache .coverage
+	rm -rf frontend/dist .mypy_cache .ruff_cache .pytest_cache .coverage .coverage.* reports/
 	@find . -not -path "./.venv/*" -type d -name "__pycache__" \
 		-exec rm -rf {} + 2>/dev/null || true
 

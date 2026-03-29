@@ -35,13 +35,18 @@ make superuser          # Create a Django superuser
 make test               # Run all tests
 make test-unit          # Unit tests only  (-m unit)
 make test-integration   # Integration tests only  (-m integration)
-make test-cov           # Tests with coverage report
+make test-cov           # Tests with coverage — enforces 80%, outputs to reports/coverage/
 make test-watch         # Re-run tests on file changes (ptw)
 
 # Run a specific file or test directly
-uv run pytest todo/tests/test_something.py
-uv run pytest todo/tests/test_something.py::TestClass::test_method
+uv run pytest tests/test_something.py
+uv run pytest tests/test_something.py::test_function
+
+# Run with coverage manually (no fail-under enforcement)
+uv run pytest --cov=todo --cov-report=term-missing
 ```
+
+Coverage is configured in `.coveragerc.toml` (branch coverage, `todo` package only, migrations excluded). Report formats: terminal, HTML, XML (Codecov), JSON, LCOV. All file outputs go to `reports/coverage/` (gitignored).
 
 ## Code Quality
 

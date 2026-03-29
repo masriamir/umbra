@@ -1,0 +1,33 @@
+[coverage.run]
+source = [
+    "todo",
+]
+branch = true
+omit = [
+    "*/migrations/*",
+]
+
+[coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+]
+
+[coverage.html]
+directory = "reports/coverage/html"
+title = "ef-todo Coverage Report"
+
+[coverage.xml]
+output = "reports/coverage/coverage.xml"
+
+[coverage.json]
+output = "reports/coverage/coverage.json"
+pretty_print = true
+
+[coverage.lcov]
+output = "reports/coverage/coverage.lcov"

@@ -362,17 +362,31 @@ make test-unit
 make test-integration
 
 # Run a specific file or test
-uv run pytest todo/tests/test_something.py
-uv run pytest todo/tests/test_something.py::TestClass::test_method
+uv run pytest tests/test_something.py
+uv run pytest tests/test_something.py::test_function
 
-# With coverage
+# With coverage (enforces 80% minimum)
 make test-cov
 
 # Watch mode (re-runs on file save)
 make test-watch
 ```
 
-Pytest is configured in `pytest.toml`. Logs are written to `logs/pytest-logs.log` (DEBUG level) and printed to the console at INFO level during test runs.
+Pytest is configured in `pytest.toml`. Logs are written to `logs/pytest.log` (DEBUG level) and printed to the console at INFO level during test runs.
+
+### Coverage
+
+`make test-cov` measures branch coverage of the `todo` package and enforces a minimum of **80%**. It outputs four report formats to `reports/coverage/`:
+
+| Format | Path | Purpose |
+|---|---|---|
+| Terminal | stdout | Quick summary with missing line numbers |
+| HTML | `reports/coverage/html/` | Human-readable browsable report |
+| XML | `reports/coverage/coverage.xml` | Codecov / CI integration |
+| JSON | `reports/coverage/coverage.json` | Programmatic consumption |
+| LCOV | `reports/coverage/coverage.lcov` | Editor integrations (e.g. VS Code Coverage Gutters) |
+
+Coverage is configured in `.coveragerc.toml`. The `reports/` directory is gitignored. To mark a block as intentionally untested, use `# pragma: no cover`.
 
 ---
 
@@ -387,6 +401,7 @@ The project enforces strict code quality standards following Google style conven
 | Ruff (lint + docstyle) | `pyproject.toml` — line-length 88, double quotes, Google docstring convention | `make lint` |
 | Ruff (format) | `pyproject.toml` | `make format` |
 | Mypy | `mypy.ini` — strict mode, Python 3.13 | `make typecheck` |
+| pytest-cov | `.coveragerc.toml` — branch coverage, 80% minimum, `reports/coverage/` | `make test-cov` |
 
 Run all checks at once (read-only, no files modified):
 
