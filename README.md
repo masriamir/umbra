@@ -79,9 +79,9 @@ A todo web application designed to aid people with ADHD who experience disrupted
 | Tailwind CSS | v4 | Utility-first CSS |
 | TanStack Query | v5 | Server state and caching |
 | React Router | v7 | Client-side routing |
-| dnd-kit | v6 | Drag-and-drop reordering |
+| dnd-kit | v6 (core) / v10 (sortable) | Drag-and-drop reordering |
 | react-colorful | v5 | Visual color picker |
-| Axios | — | HTTP client |
+| Axios | 1 | HTTP client |
 
 ### Tooling
 | Tool | Purpose |
