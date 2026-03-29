@@ -1,1 +1,1 @@
-"""Django application package for the ef-todo todo list."""
+"""Django application package for the Umbra todo list."""

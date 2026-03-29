@@ -20,7 +20,7 @@ exclude_lines = [
 
 [coverage.html]
 directory = "reports/coverage/html"
-title = "ef-todo Coverage Report"
+title = "Umbra Coverage Report"
 
 [coverage.xml]
 output = "reports/coverage/coverage.xml"

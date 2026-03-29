@@ -1,4 +1,4 @@
-"""Root URL configuration for the ef_todo project."""
+"""Root URL configuration for the Umbra project."""
 
 from django.contrib import admin
 from django.urls import include, path

@@ -1,7 +1,7 @@
 [pytest]
 minversion = "9.0.0"
 strict = true
-DJANGO_SETTINGS_MODULE = "ef_todo.settings"
+DJANGO_SETTINGS_MODULE = "umbra.settings"
 
 # Test discovery
 testpaths = [

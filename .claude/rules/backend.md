@@ -2,14 +2,14 @@
 paths:
   - "**/*.py"
   - "todo/**"
-  - "ef_todo/**"
+  - "umbra/**"
 ---
 
 # Backend
 
 ## Django Architecture
 
-- `ef_todo/` — Django project config (settings, root URLs, WSGI/ASGI)
+- `umbra/` — Django project config (settings, root URLs, WSGI/ASGI)
 - `todo/` — Single Django app containing all domain logic
   - `todo/models/` — Split across multiple files; all exported via `__init__.py`
   - `todo/serializers/` — DRF serializers using nested-read / ID-write pattern (e.g. `color` on read, `color_id` on write)

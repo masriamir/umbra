@@ -28,7 +28,7 @@ def build_event(item: TodoItem, todo_list: TodoList) -> Event:
         A populated ``icalendar.Event`` component ready to add to a calendar.
     """
     event = Event()
-    event.add("uid", f"{item.pk}-{uuid.uuid4()}@ef-todo")
+    event.add("uid", f"{item.pk}-{uuid.uuid4()}@umbra")
     event.add("dtstamp", datetime.now(UTC))
     event.add("summary", item.title)
     event.add("status", "CONFIRMED")
@@ -69,7 +69,7 @@ def build_calendar(todo_list: TodoList, items: list[TodoItem]) -> Calendar:
         A populated ``icalendar.Calendar`` component.
     """
     cal = Calendar()
-    cal.add("prodid", "-//ef-todo//ef-todo//EN")
+    cal.add("prodid", "-//umbra//umbra//EN")
     cal.add("version", "2.0")
     cal.add("x-wr-calname", todo_list.name)
     if todo_list.description:

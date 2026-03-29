@@ -1,7 +1,7 @@
 [project]
-name = "ef-todo"
+name = "umbra"
 dynamic = ["version"]
-description = "A ToDo web application to aid in disrupted executive functioning due to ADHD."
+description = "A TODO web application to aid in disrupted executive functioning due to ADHD."
 authors = [
     { name = "Amir Masri", email = "masriamir@users.noreply.github.com" },
 ]
@@ -33,9 +33,9 @@ license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
 [project.urls]
-Homepage = "https://github.com/masriamir/ef-todo"
-Repository = "https://github.com/masriamir/ef-todo"
-Issues = "https://github.com/masriamir/ef-todo/issues"
+Homepage = "https://github.com/masriamir/umbra"
+Repository = "https://github.com/masriamir/umbra"
+Issues = "https://github.com/masriamir/umbra/issues"
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
@@ -69,7 +69,7 @@ line-length = 88
 target-version = "py313"
 src = [
     "todo",
-    "ef_todo",
+    "umbra",
 ]
 
 [tool.ruff.lint]
@@ -140,7 +140,7 @@ convention = "google"
 [tool.ruff.lint.isort]
 known-first-party = [
     "todo",
-    "ef_todo",
+    "umbra",
 ]
 
 [tool.uv]

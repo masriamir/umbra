@@ -1,6 +1,6 @@
-# ef-todo
+# Umbra
 
-A todo web application designed to aid people with ADHD who experience disrupted executive functioning (EF). By providing structured organization through color-coded lists, tags, priorities, and due dates, ef-todo reduces the cognitive overhead of managing tasks.
+A TODO web application designed to aid people with ADHD who experience disrupted executive functioning (EF). By providing a structured organization through color-coded lists, tags, priorities, and due dates, Umbra reduces the cognitive overhead of managing tasks.
 
 ## Table of Contents
 
@@ -97,8 +97,8 @@ A todo web application designed to aid people with ADHD who experience disrupted
 ## Project Structure
 
 ```
-ef_todo/
-├── ef_todo/                # Django project config
+umbra/
+├── umbra/                  # Django project config
 │   ├── settings.py         # Settings (reads from .env)
 │   ├── urls.py             # Root URL routing
 │   ├── wsgi.py
@@ -153,8 +153,8 @@ ef_todo/
 
 ```bash
 # 1. Clone and enter the repo
-git clone https://github.com/masriamir/ef-todo.git
-cd ef-todo
+git clone https://github.com/masriamir/umbra.git
+cd umbra
 
 # 2. Configure environment
 cp .env.sample .env

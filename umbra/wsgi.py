@@ -1,4 +1,4 @@
-"""WSGI config for the ef_todo project.
+"""WSGI config for the Umbra project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -10,6 +10,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ef_todo.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "umbra.settings")
 
 application = get_wsgi_application()
