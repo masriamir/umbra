@@ -33,7 +33,9 @@ paths:
 
 ## Code Style
 
-**Ruff config:** line-length=88, double quotes, no preview mode. Active rules: S, B, A, COM, C4, T20, PTH, I, C90, N, E, W, F, PL, UP, RUF. Ignored: E501, COM812, RUF012.
+**Style guide:** [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html). All public modules, packages, classes, and non-trivial functions require Google-style docstrings (summary line ending in a period, then `Args:` / `Returns:` / `Raises:` sections as needed).
+
+**Ruff config:** line-length=88, double quotes, no preview mode. Active rule sets: S, B, A, COM, C4, T20, PTH, I, C90, N, E, W, F, D, PL, UP, RUF. Docstyle convention: `google`. Globally ignored: E501, COM812, RUF012, D105, D107.
 
 **Mypy:** strict mode enabled, Python 3.13 target, migrations excluded.
 

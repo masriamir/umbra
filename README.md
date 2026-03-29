@@ -378,13 +378,13 @@ Pytest is configured in `pytest.toml`. Logs are written to `logs/pytest-logs.log
 
 ## Code Quality
 
-The project enforces strict code quality standards.
+The project enforces strict code quality standards following Google style conventions — [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) for Python and [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html) for JavaScript. All public modules, packages, classes, and functions must have Google-style docstrings.
 
 ### Python
 
 | Tool | Config | Command |
 |---|---|---|
-| Ruff (lint) | `pyproject.toml` — line-length 88, double quotes | `make lint` |
+| Ruff (lint + docstyle) | `pyproject.toml` — line-length 88, double quotes, Google docstring convention | `make lint` |
 | Ruff (format) | `pyproject.toml` | `make format` |
 | Mypy | `mypy.ini` — strict mode, Python 3.13 | `make typecheck` |
 

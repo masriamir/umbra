@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Formatting:** Follow `.editorconfig` for all files — final newline, no trailing whitespace, LF line endings, and per-language indent sizes (4 spaces for Python/TOML, 2 for JS/TS/JSON/YAML/HTML/CSS, tabs for Makefile).
 
+**Style guides:** Follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) for Python and the [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html) for JavaScript. All public modules, packages, classes, and functions must have Google-style docstrings.
+
 Detailed rules are organized in `.claude/rules/`:
 - `commands.md` — Makefile targets and direct CLI commands
 - `environment.md` — Prerequisites, `.env` variables, dev server wiring

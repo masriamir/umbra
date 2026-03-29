@@ -1,3 +1,5 @@
+"""ViewSets for the Color, Tag, TodoList, and TodoItem resources."""
+
 from django.db import models, transaction
 from django.db.models import QuerySet
 from django.db.models.deletion import ProtectedError
@@ -20,10 +22,13 @@ from todo.serializers import (
 
 
 class ColorViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for Color resources."""
+
     queryset = Color.objects.all()
     serializer_class = ColorSerializer
 
     def destroy(self, request: Request, *args: object, **kwargs: object) -> Response:
+        """Delete a color, returning 400 if it is still referenced by a list or tag."""
         try:
             return super().destroy(request, *args, **kwargs)
         except ProtectedError:
@@ -36,16 +41,21 @@ class ColorViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for Tag resources."""
+
     queryset = Tag.objects.select_related("color").all()
     serializer_class = TagSerializer
 
 
 class TodoListViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for TodoList resources, including ICS calendar export."""
+
     queryset = TodoList.objects.select_related("color").all()
     serializer_class = TodoListSerializer
 
     @action(detail=True, methods=["get"], url_path="export")  # type: ignore[untyped-decorator]
     def export(self, request: Request, pk: int | None = None) -> HttpResponse:
+        """Export all incomplete, dated items in the list as an ICS calendar file."""
         todo_list = self.get_object()
         items = list(
             TodoItem.objects.filter(list=todo_list, completed=False)
@@ -62,9 +72,12 @@ class TodoListViewSet(viewsets.ModelViewSet):
 
 
 class TodoItemViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for TodoItem resources, scoped to a parent list."""
+
     serializer_class = TodoItemSerializer
 
     def get_queryset(self) -> QuerySet[TodoItem]:
+        """Return items belonging to the parent list, ordered by priority."""
         return (
             TodoItem.objects.filter(list_id=self.kwargs["list_pk"])
             .select_related("list")
@@ -73,6 +86,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer: drf_serializers.BaseSerializer) -> None:
+        """Save a new item, assigning the parent list and auto-incrementing priority."""
         todo_list = get_object_or_404(TodoList, pk=self.kwargs["list_pk"])
         current_max = TodoItem.objects.filter(list=todo_list).aggregate(
             max_priority=models.Max("priority")
@@ -84,6 +98,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
     def export(
         self, request: Request, list_pk: int | None = None, pk: int | None = None
     ) -> HttpResponse:
+        """Export a single item as an ICS calendar event."""
         item = self.get_object()
         if item.due_date is None:
             return HttpResponse(
@@ -102,6 +117,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="reorder")  # type: ignore[untyped-decorator]
     def reorder(self, request: Request, list_pk: int | None = None) -> Response:
+        """Reassign priority values atomically based on the supplied ID order."""
         order = request.data.get("order", [])
         if not isinstance(order, list) or not all(isinstance(i, int) for i in order):
             raise drf_serializers.ValidationError(

@@ -1,3 +1,5 @@
+"""Shared pytest fixtures for the todo application test suite."""
+
 from __future__ import annotations
 
 import os
@@ -14,9 +16,10 @@ def django_db_setup(
     django_test_environment,
     django_db_blocker,
 ):
-    """Override database settings to use explicit env vars instead of the
-    service file configured in settings.py, making tests portable across
-    environments that may not have a pg_service.conf file."""
+    """Override database settings to use explicit env vars instead of the service file.
+
+    Makes tests portable across environments that may not have a pg_service.conf file.
+    """
     from django.conf import settings
     from django.test.utils import setup_databases, teardown_databases
 

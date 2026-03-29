@@ -1,5 +1,4 @@
-"""
-ASGI config for ef_todo project.
+"""ASGI config for the ef_todo project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

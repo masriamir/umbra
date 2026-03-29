@@ -1,3 +1,5 @@
+"""iCalendar (ICS) export helpers for todo lists and items."""
+
 from __future__ import annotations
 
 import uuid
@@ -16,6 +18,15 @@ def _sanitize_filename(name: str) -> str:
 
 
 def build_event(item: TodoItem, todo_list: TodoList) -> Event:
+    """Build an iCalendar VEVENT component from a TodoItem.
+
+    Args:
+        item: The todo item to convert into a calendar event.
+        todo_list: The parent list, used to populate the event description.
+
+    Returns:
+        A populated ``icalendar.Event`` component ready to add to a calendar.
+    """
     event = Event()
     event.add("uid", f"{item.pk}-{uuid.uuid4()}@ef-todo")
     event.add("dtstamp", datetime.now(UTC))
@@ -48,6 +59,15 @@ def build_event(item: TodoItem, todo_list: TodoList) -> Event:
 
 
 def build_calendar(todo_list: TodoList, items: list[TodoItem]) -> Calendar:
+    """Build an iCalendar VCALENDAR containing an event for each item.
+
+    Args:
+        todo_list: The list whose metadata populates the calendar properties.
+        items: The items to include as VEVENT components.
+
+    Returns:
+        A populated ``icalendar.Calendar`` component.
+    """
     cal = Calendar()
     cal.add("prodid", "-//ef-todo//ef-todo//EN")
     cal.add("version", "2.0")

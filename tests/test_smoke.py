@@ -1,3 +1,5 @@
+"""Smoke tests verifying core endpoint availability and the full resource chain."""
+
 from __future__ import annotations
 
 import pytest
@@ -38,8 +40,10 @@ def test_items_endpoint_available(api_client: APIClient, todo_list: TodoList) ->
 @pytest.mark.smoke
 @pytest.mark.django_db
 def test_full_resource_chain(api_client: APIClient) -> None:
-    """Create a color → tag → list → item through the API and verify each
-    resource is retrievable at the end of the chain."""
+    """Create a color → tag → list → item through the API and verify each resource.
+
+    Confirms that every resource in the chain is retrievable after creation.
+    """
     color_res = api_client.post(
         "/api/colors/", {"name": "Chain Blue", "hex_code": "#1122FF"}, format="json"
     )

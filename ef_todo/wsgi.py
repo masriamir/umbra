@@ -1,5 +1,4 @@
-"""
-WSGI config for ef_todo project.
+"""WSGI config for the ef_todo project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

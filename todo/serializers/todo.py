@@ -1,3 +1,5 @@
+"""Serializers for the TodoList and TodoItem models."""
+
 from typing import Any
 
 from django.utils import timezone
@@ -9,6 +11,11 @@ from todo.serializers.tag import TagSerializer
 
 
 class TodoListSerializer(serializers.ModelSerializer):
+    """Serializer for the TodoList model.
+
+    Accepts ``color_id`` on write and returns the nested color object on read.
+    """
+
     color = ColorSerializer(read_only=True)
     color_id = serializers.PrimaryKeyRelatedField(
         source="color",
@@ -31,6 +38,11 @@ class TodoListSerializer(serializers.ModelSerializer):
 
 
 class TodoItemSerializer(serializers.ModelSerializer):
+    """Serializer for the TodoItem model.
+
+    Accepts ``tag_ids`` on write and returns nested tag objects on read.
+    """
+
     tags = TagSerializer(many=True, read_only=True)
     tag_ids = serializers.PrimaryKeyRelatedField(
         source="tags",
@@ -67,11 +79,13 @@ class TodoItemSerializer(serializers.ModelSerializer):
         ]
 
     def run_validators(self, value: dict[str, Any]) -> None:
-        # `title` has `unique_for_date="created_date"`, which causes DRF to generate
-        # a UniqueForDateValidator. DRF 3.17+ calls enforce_required_fields()
-        # unconditionally, requiring both `title` and `created_date` to be present
-        # even on partial updates. Inject missing fields from the instance so the
-        # validator can run without erroring on unrelated partial patches.
+        """Inject instance fields required by UniqueForDateValidator before validation.
+
+        DRF 3.17+ calls ``enforce_required_fields()`` unconditionally, requiring
+        both ``title`` and ``created_date`` to be present even on partial updates.
+        Missing fields are sourced from the existing instance so that unrelated
+        partial patches are not rejected.
+        """
         if self.instance is not None:
             if "title" not in value:
                 value = {**value, "title": self.instance.title}
