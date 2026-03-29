@@ -25,6 +25,28 @@ export default function ListDetailPage() {
   const [editingItem, setEditingItem] = useState(null);
   const [deletingItem, setDeletingItem] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
+  const [exportWarningItems, setExportWarningItems] = useState(null);
+
+  const triggerListExport = () => {
+    window.open(`/api/lists/${listId}/export/`, "_blank");
+  };
+
+  const handleExportList = () => {
+    const skipped = items.filter((i) => !i.completed && !i.due_date);
+    if (skipped.length > 0) {
+      setExportWarningItems(skipped);
+    } else {
+      triggerListExport();
+    }
+  };
+
+  const handleExportItem = (item) => {
+    if (!item.due_date) {
+      setExportWarningItems([item]);
+    } else {
+      window.open(`/api/lists/${listId}/items/${item.id}/export/`, "_blank");
+    }
+  };
 
   const handleToggleComplete = (item) => {
     updateItem.mutate({ itemId: item.id, data: { completed: !item.completed } });
@@ -68,12 +90,20 @@ export default function ListDetailPage() {
             <h1 className="text-2xl font-bold text-gray-900">{list.name}</h1>
           </div>
         )}
-        <button
-          onClick={() => setShowForm(true)}
-          className="ml-auto bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
-        >
-          + Add Item
-        </button>
+        <div className="ml-auto flex gap-2">
+          <button
+            onClick={handleExportList}
+            className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors shadow-sm"
+          >
+            Export .ics
+          </button>
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            + Add Item
+          </button>
+        </div>
       </div>
 
       {isLoading && <Spinner />}
@@ -86,6 +116,7 @@ export default function ListDetailPage() {
           onEdit={handleEdit}
           onDelete={setDeletingItem}
           onToggleComplete={handleToggleComplete}
+          onExport={handleExportItem}
         />
       )}
 
@@ -104,6 +135,52 @@ export default function ListDetailPage() {
             }}
             onCancel={handleCloseForm}
           />
+        </Modal>
+      )}
+
+      {exportWarningItems && (
+        <Modal onClose={() => setExportWarningItems(null)}>
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Export to Calendar</h2>
+            {exportWarningItems.length === 1 && !exportWarningItems[0].due_date ? (
+              <p className="text-sm text-gray-600">
+                <strong>&ldquo;{exportWarningItems[0].title}&rdquo;</strong> has no due
+                date and cannot be exported to a calendar.
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-gray-600">
+                  The following {exportWarningItems.length} item
+                  {exportWarningItems.length !== 1 ? "s" : ""} have no due date and will
+                  be skipped:
+                </p>
+                <ul className="text-sm text-gray-500 list-disc list-inside space-y-0.5 max-h-40 overflow-y-auto">
+                  {exportWarningItems.map((i) => (
+                    <li key={i.id}>{i.title}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <div className="flex justify-end gap-3 pt-1">
+              <button
+                onClick={() => setExportWarningItems(null)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              {!(exportWarningItems.length === 1 && !exportWarningItems[0].due_date) && (
+                <button
+                  onClick={() => {
+                    setExportWarningItems(null);
+                    triggerListExport();
+                  }}
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                >
+                  Export anyway
+                </button>
+              )}
+            </div>
+          </div>
         </Modal>
       )}
 

@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useReorderItems } from "../../hooks/useItems";
 import ItemRow from "./ItemRow";
 
-export default function ItemList({ listId, items, onEdit, onDelete, onToggleComplete }) {
+export default function ItemList({ listId, items, onEdit, onDelete, onToggleComplete, onExport }) {
   const [orderedItems, setOrderedItems] = useState(items);
   const reorder = useReorderItems(listId);
 
@@ -54,6 +54,7 @@ export default function ItemList({ listId, items, onEdit, onDelete, onToggleComp
               onEdit={onEdit}
               onDelete={onDelete}
               onToggleComplete={onToggleComplete}
+              onExport={onExport}
             />
           ))}
         </div>

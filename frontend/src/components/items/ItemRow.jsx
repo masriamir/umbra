@@ -5,7 +5,13 @@ import TagBadge from "../ui/TagBadge";
 import DragHandle from "./DragHandle";
 import ItemCheckbox from "./ItemCheckbox";
 
-export default function ItemRow({ item, onEdit, onDelete, onToggleComplete }) {
+const IMPORTANCE_STYLES = {
+  1: { label: "High", className: "text-red-600 font-semibold" },
+  5: { label: "Med", className: "text-amber-600 font-semibold" },
+  9: { label: "Low", className: "text-gray-400" },
+};
+
+export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onExport }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
 
@@ -28,13 +34,20 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete }) {
         onChange={() => onToggleComplete(item)}
       />
       <div className="flex-1 min-w-0">
-        <p
-          className={`font-medium text-sm leading-snug ${
-            item.completed ? "line-through text-gray-400" : "text-gray-800"
-          }`}
-        >
-          {item.title}
-        </p>
+        <div className="flex items-baseline gap-2">
+          <p
+            className={`font-medium text-sm leading-snug ${
+              item.completed ? "line-through text-gray-400" : "text-gray-800"
+            }`}
+          >
+            {item.title}
+          </p>
+          {IMPORTANCE_STYLES[item.importance] && (
+            <span className={`text-xs shrink-0 ${IMPORTANCE_STYLES[item.importance].className}`}>
+              {IMPORTANCE_STYLES[item.importance].label}
+            </span>
+          )}
+        </div>
         {item.description && (
           <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{item.description}</p>
         )}
@@ -52,6 +65,13 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete }) {
         )}
       </div>
       <div className="flex gap-2 shrink-0">
+        <button
+          onClick={() => onExport(item)}
+          className="text-xs text-emerald-600 hover:underline"
+          title="Export to calendar"
+        >
+          Export
+        </button>
         <button
           onClick={() => onEdit(item)}
           className="text-xs text-blue-600 hover:underline"

@@ -5,6 +5,18 @@ from .core import EFBase
 from .tag import Tag
 
 
+class Importance(models.IntegerChoices):
+    """
+    Task importance, mapped directly to iCalendar PRIORITY values (RFC 5545).
+    1-4 = high, 5 = medium, 6-9 = low, 0 = undefined.
+    """
+
+    NONE = 0, "None"
+    HIGH = 1, "High"
+    MEDIUM = 5, "Medium"
+    LOW = 9, "Low"
+
+
 class TodoList(EFBase):
     name = models.CharField(unique=True, max_length=32)
     description = models.CharField(max_length=256, blank=True, default="")
@@ -27,9 +39,18 @@ class TodoItem(EFBase):
         Tag, blank=True, through="TodoItemTag", through_fields=("todo_item", "tag")
     )
     due_date = models.DateTimeField(blank=True, null=True)
+    duration_minutes = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Event duration in minutes for calendar export. Defaults to 30 if not set.",
+    )
     completed = models.BooleanField(default=False)
     synced = models.BooleanField(default=False)
     priority = models.PositiveIntegerField(default=0)
+    importance = models.IntegerField(
+        choices=Importance,
+        default=Importance.NONE,
+    )
 
     class Meta:
         db_table = "todo_item"

@@ -3,6 +3,13 @@ import { useState } from "react";
 import { useColors } from "../../hooks/useColors";
 import TagSelector from "../ui/TagSelector";
 
+const IMPORTANCE_OPTIONS = [
+  { value: 0, label: "None" },
+  { value: 1, label: "High" },
+  { value: 5, label: "Medium" },
+  { value: 9, label: "Low" },
+];
+
 export default function ItemForm({ initialValues, onSubmit, onCancel, isPending }) {
   const { data: colors = [] } = useColors();
   const [title, setTitle] = useState(initialValues?.title ?? "");
@@ -13,6 +20,10 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
       ? new Date(initialValues.due_date).toISOString().slice(0, 16)
       : "",
   );
+  const [durationMinutes, setDurationMinutes] = useState(
+    initialValues?.duration_minutes ?? "",
+  );
+  const [importance, setImportance] = useState(initialValues?.importance ?? 0);
   const [completed, setCompleted] = useState(initialValues?.completed ?? false);
   const [error, setError] = useState(null);
 
@@ -25,6 +36,8 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
         description: description.trim(),
         tag_ids: tagIds,
         due_date: dueDate || null,
+        duration_minutes: durationMinutes !== "" ? parseInt(durationMinutes, 10) : null,
+        importance,
         completed,
       });
     } catch (e) {
@@ -85,6 +98,38 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
           onChange={(e) => setDueDate(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Importance
+          </label>
+          <select
+            value={importance}
+            onChange={(e) => setImportance(parseInt(e.target.value, 10))}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            {IMPORTANCE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Duration (minutes)
+          </label>
+          <input
+            type="number"
+            min={1}
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(e.target.value)}
+            placeholder="30"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-2">

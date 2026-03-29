@@ -14,6 +14,7 @@ item_detail = views.TodoItemViewSet.as_view(
     {"get": "retrieve", "patch": "partial_update", "delete": "destroy"}
 )
 item_reorder = views.TodoItemViewSet.as_view({"post": "reorder"})
+item_export = views.TodoItemViewSet.as_view({"get": "export"})
 
 urlpatterns = [
     path("", include(router.urls)),
@@ -25,5 +26,10 @@ urlpatterns = [
     ),
     path(
         "lists/<int:list_pk>/items/<int:pk>/", item_detail, name="todolist-items-detail"
+    ),
+    path(
+        "lists/<int:list_pk>/items/<int:pk>/export/",
+        item_export,
+        name="todolist-items-export",
     ),
 ]

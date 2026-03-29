@@ -1,5 +1,5 @@
 from .color import Color
 from .tag import Tag
-from .todo import TodoItem, TodoItemTag, TodoList
+from .todo import Importance, TodoItem, TodoItemTag, TodoList
 
-__all__ = ["Color", "Tag", "TodoItem", "TodoItemTag", "TodoList"]
+__all__ = ["Color", "Importance", "Tag", "TodoItem", "TodoItemTag", "TodoList"]
