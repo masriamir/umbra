@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Python 3.13+ (pinned in `.python-version`)
+- Python 3.14+ (pinned in `.python-version`)
 - uv 0.9.9+ for Python dependency management
 - Node.js (LTS) + npm for the frontend
 - PostgreSQL running locally (or accessible via network)

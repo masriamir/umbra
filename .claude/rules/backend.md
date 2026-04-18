@@ -37,7 +37,7 @@ paths:
 
 **Ruff config:** line-length=88, double quotes, no preview mode. Active rule sets: S, B, A, COM, C4, T20, PTH, I, C90, N, E, W, F, D, PL, UP, RUF. Docstyle convention: `google`. Globally ignored: E501, COM812, RUF012, D105, D107.
 
-**Mypy:** strict mode enabled, Python 3.13 target, migrations excluded.
+**Mypy:** strict mode enabled, Python 3.14 target, migrations excluded.
 
 ## Testing
 

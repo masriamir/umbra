@@ -6,9 +6,9 @@ authors = [
     { name = "Amir Masri", email = "masriamir@users.noreply.github.com" },
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
-    "django>=5.2.11,<6.0.0",
+    "django>=6.0.4,<7.0.0",
     "psycopg[binary]>=3.3.3,<4.0.0",
     "django-environ>=0.13.0,<1.0.0",
     "djangorestframework>=3.17.1,<4.0.0",
@@ -22,7 +22,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Internet :: WWW/HTTP :: WSGI",
@@ -66,7 +66,7 @@ extend-exclude = [
     "todo/migrations",
 ]
 line-length = 88
-target-version = "py313"
+target-version = "py314"
 src = [
     "todo",
     "umbra",
@@ -155,7 +155,7 @@ default-groups = [
 required-version = ">=0.9.9,<1.0.0"
 
 [tool.uv.pip]
-python-version = "3.13"
+python-version = "3.14"
 
 [tool.hatch.version]
 source = "vcs"

@@ -6,18 +6,20 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useReorderItems } from "../../hooks/useItems";
 import ItemRow from "./ItemRow";
 
 export default function ItemList({ listId, items, onEdit, onDelete, onToggleComplete, onExport }) {
   const [orderedItems, setOrderedItems] = useState(items);
+  const [prevItems, setPrevItems] = useState(items);
   const reorder = useReorderItems(listId);
 
-  useEffect(() => {
+  if (prevItems !== items) {
+    setPrevItems(items);
     setOrderedItems(items);
-  }, [items]);
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),

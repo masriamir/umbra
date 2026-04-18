@@ -61,8 +61,8 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 ### Backend
 | Technology | Version | Purpose |
 |---|---|---|
-| Python | 3.13 | Runtime |
-| Django | 5.2+ | Web framework |
+| Python | 3.14 | Runtime |
+| Django | 6.0+ | Web framework |
 | Django REST Framework | 3.17+ | REST API |
 | PostgreSQL | — | Database |
 | psycopg | 3.3+ | PostgreSQL driver |
@@ -75,7 +75,7 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 | Technology | Version | Purpose |
 |---|---|---|
 | React | 19 | UI framework |
-| Vite | 7 | Build tool and dev server |
+| Vite | 8 | Build tool and dev server |
 | Tailwind CSS | v4 | Utility-first CSS |
 | TanStack Query | v5 | Server state and caching |
 | React Router | v7 | Client-side routing |
@@ -133,14 +133,14 @@ umbra/
 ├── mypy.ini                # Mypy configuration
 ├── pytest.toml             # Pytest configuration
 ├── .env.sample             # Environment variable template
-└── .python-version         # Pins Python 3.13
+└── .python-version         # Pins Python 3.14.4
 ```
 
 ---
 
 ## Prerequisites
 
-- **Python 3.13+** — see `.python-version`
+- **Python 3.14+** — see `.python-version`
 - **uv 0.9.9+** — [install](https://docs.astral.sh/uv/getting-started/installation/)
 - **Node.js** (LTS) and **npm**
 - **PostgreSQL** running locally (or accessible via network)
@@ -400,7 +400,7 @@ The project enforces strict code quality standards following Google style conven
 |---|---|---|
 | Ruff (lint + docstyle) | `pyproject.toml` — line-length 88, double quotes, Google docstring convention | `make lint` |
 | Ruff (format) | `pyproject.toml` | `make format` |
-| Mypy | `mypy.ini` — strict mode, Python 3.13 | `make typecheck` |
+| Mypy | `mypy.ini` — strict mode, Python 3.14 | `make typecheck` |
 | pytest-cov | `.coveragerc.toml` — branch coverage, 80% minimum, `reports/coverage/` | `make test-cov` |
 
 Run all checks at once (read-only, no files modified):
