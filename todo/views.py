@@ -1,24 +1,94 @@
 """ViewSets for the Color, Tag, TodoList, and TodoItem resources."""
 
+from datetime import timedelta
+
 from django.db import models, transaction
-from django.db.models import QuerySet
+from django.db.models import Count, Q, QuerySet
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from todo.ics import _sanitize_filename, build_calendar
-from todo.models import Color, Tag, TodoItem, TodoList
+from todo.models import Color, Importance, Tag, TodoItem, TodoList
 from todo.serializers import (
     ColorSerializer,
     TagSerializer,
     TodoItemSerializer,
     TodoListSerializer,
 )
+
+
+@api_view(["GET"])  # type: ignore[untyped-decorator]
+def stats(request: Request) -> Response:
+    """Return aggregate statistics across lists, items, tags, and colors.
+
+    Returns:
+        Response containing totals, due/overdue counts, importance breakdown,
+        and top lists/tags by item usage.
+    """
+    now = timezone.now()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    week_end = today_start + timedelta(days=7)
+
+    total_items = TodoItem.objects.count()
+    completed_items = TodoItem.objects.filter(completed=True).count()
+
+    importance_breakdown = {
+        label.lower(): TodoItem.objects.filter(
+            completed=False, importance=value
+        ).count()
+        for value, label in Importance.choices
+    }
+
+    top_lists = list(
+        TodoList.objects.annotate(
+            item_count=Count("items"),
+            completed_count=Count("items", filter=Q(items__completed=True)),
+        )
+        .values("id", "name", "item_count", "completed_count")
+        .order_by("-item_count")[:10]
+    )
+
+    top_tags = list(
+        Tag.objects.annotate(usage_count=Count("todoitemtag"))
+        .values("id", "name", "usage_count")
+        .order_by("-usage_count")[:10]
+    )
+
+    return Response(
+        {
+            "totals": {
+                "lists": TodoList.objects.count(),
+                "items": total_items,
+                "completed_items": completed_items,
+                "active_items": total_items - completed_items,
+                "colors": Color.objects.count(),
+                "tags": Tag.objects.count(),
+            },
+            "items_due_this_week": TodoItem.objects.filter(
+                completed=False,
+                due_date__gte=today_start,
+                due_date__lt=week_end,
+            ).count(),
+            "overdue_items": TodoItem.objects.filter(
+                completed=False,
+                due_date__lt=today_start,
+            ).count(),
+            "items_without_due_date": TodoItem.objects.filter(
+                completed=False,
+                due_date__isnull=True,
+            ).count(),
+            "importance_breakdown": importance_breakdown,
+            "top_lists": top_lists,
+            "top_tags": top_tags,
+        }
+    )
 
 
 class ColorViewSet(viewsets.ModelViewSet):

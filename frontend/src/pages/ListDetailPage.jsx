@@ -76,7 +76,7 @@ export default function ListDetailPage() {
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-6">
         <Link
-          to="/"
+          to="/lists"
           className="text-primary hover:text-primary-hover text-sm font-medium transition-colors"
         >
           ← Back

@@ -2,6 +2,8 @@
  * @fileoverview Shared application header component.
  */
 
+import { Link, NavLink } from "react-router-dom";
+
 /**
  * Sun icon used to indicate "switch to light mode".
  *
@@ -57,7 +59,23 @@ function MoonIcon() {
 }
 
 /**
- * Application-wide header displaying the app name and dark mode toggle.
+ * Returns className for a nav link, applying an active style when the route matches.
+ *
+ * @param {object} params
+ * @param {boolean} params.isActive - Whether the link's route is currently active.
+ * @returns {string}
+ */
+function navLinkClass({ isActive }) {
+  return [
+    "text-sm font-medium transition-colors px-1 py-0.5 rounded",
+    isActive
+      ? "text-body border-b-2 border-primary"
+      : "text-secondary hover:text-body",
+  ].join(" ");
+}
+
+/**
+ * Application-wide header displaying the app name, nav links, and dark mode toggle.
  *
  * @param {object} props
  * @param {boolean} props.darkMode - Whether dark mode is currently active.
@@ -67,13 +85,25 @@ function MoonIcon() {
 export default function Header({ darkMode, onToggle }) {
   return (
     <header className="bg-surface border-b border-rule sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <span className="text-4xl font-bold text-body tracking-tight">Umbra</span>
+      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
+        <Link
+          to="/"
+          className="text-4xl font-bold text-body tracking-tight shrink-0 hover:text-primary transition-colors"
+        >
+          Umbra
+        </Link>
+
+        <nav className="flex items-center gap-4 flex-1" aria-label="Main navigation">
+          <NavLink to="/lists" className={navLinkClass}>My Lists</NavLink>
+          <NavLink to="/tags" className={navLinkClass}>Tags</NavLink>
+          <NavLink to="/colors" className={navLinkClass}>Colors</NavLink>
+        </nav>
+
         <button
           onClick={onToggle}
           aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
           title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-          className="p-2 rounded-lg text-secondary hover:text-body hover:bg-faint transition-colors"
+          className="p-2 rounded-lg text-secondary hover:text-body hover:bg-faint transition-colors shrink-0"
         >
           {darkMode ? <SunIcon /> : <MoonIcon />}
         </button>

@@ -6,7 +6,7 @@ export default function ColorSwatch({ hexCode, selected, onClick, size = "md" })
       onClick={onClick}
       title={hexCode}
       className={`${sizeClass} rounded-full transition-all focus:outline-none ${
-        selected ? "ring-2 ring-offset-2 ring-gray-700 scale-110" : "hover:scale-105"
+        selected ? "ring-2 ring-offset-2 ring-body scale-110" : "hover:scale-105"
       }`}
       style={{ backgroundColor: hexCode }}
     />

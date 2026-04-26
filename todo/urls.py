@@ -20,6 +20,7 @@ item_export = views.TodoItemViewSet.as_view({"get": "export"})
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("stats/", views.stats, name="stats"),
     path("lists/<int:list_pk>/items/", item_list, name="todolist-items-list"),
     path(
         "lists/<int:list_pk>/items/reorder/",

@@ -34,6 +34,12 @@ def test_items_endpoint_available(api_client: APIClient, todo_list: TodoList) ->
     assert api_client.get(f"/api/lists/{todo_list.pk}/items/").status_code == 200
 
 
+@pytest.mark.smoke
+@pytest.mark.django_db
+def test_stats_endpoint_available(api_client: APIClient) -> None:
+    assert api_client.get("/api/stats/").status_code == 200
+
+
 # ── Full resource chain ────────────────────────────────────────────────────────
 
 
