@@ -47,12 +47,26 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 - Create reusable tags with associated colors
 - Apply multiple tags to an item for cross-list categorization
 - Create new tags inline while editing an item
+- Manage all tags (create, edit, delete) from a dedicated Tags page
 
 ### Colors
 - Define a shared palette of named colors (stored as hex codes)
 - Pick from existing swatches or create a custom color with a visual color picker
 - Create colors inline while creating a list or tag
 - Validates 3-digit (`#RGB`) and 6-digit (`#RRGGBB`) hex formats
+- Manage all colors (create, edit, delete) from a dedicated Colors page
+
+### Dashboard
+- Overview of aggregate statistics: total lists, total items, completed vs. active counts
+- Due-date awareness: overdue items, items due within 7 days, items with no due date
+- Importance breakdown: active item counts grouped by High, Medium, Low, and None
+- Top lists by item count with per-list completion percentage
+- Most-used tags ranked by item usage count
+
+### Theming
+- One Light and One Dark color schemes toggled from the application header
+- Preference is persisted to `localStorage` and restored on next visit
+- Anti-flash script in `index.html` applies the correct theme before first paint
 
 ---
 
@@ -82,14 +96,18 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 | dnd-kit | v6 (core) / v10 (sortable) | Drag-and-drop reordering |
 | react-colorful | v5 | Visual color picker |
 | Axios | 1 | HTTP client |
+| Vitest | 4 | Frontend test runner |
+| React Testing Library | 16 | Component and page testing |
+| MSW | 2 | API mocking for tests |
 
 ### Tooling
 | Tool | Purpose |
 |---|---|
 | Ruff | Python linting and formatting |
 | Mypy (strict) | Python static type checking |
-| Pytest | Python testing |
+| Pytest | Backend testing |
 | ESLint | Frontend linting |
+| Vitest + RTL + MSW | Frontend testing |
 | PostCSS | CSS processing |
 
 ---
@@ -119,13 +137,15 @@ umbra/
 │
 ├── frontend/               # React SPA
 │   └── src/
-│       ├── api/            # Axios functions per resource
-│       ├── hooks/          # TanStack Query wrappers
+│       ├── api/            # Axios functions per resource (colors, tags, lists, items, stats)
+│       ├── hooks/          # TanStack Query wrappers (useColors, useTags, useLists, useItems, useStats, …)
 │       ├── components/
-│       │   ├── ui/         # Shared primitives (Modal, Spinner, ColorPicker, …)
+│       │   ├── ui/         # Shared primitives (Header, Modal, Spinner, ColorPicker, …)
 │       │   ├── lists/      # ListCard, ListForm, ListsGrid
 │       │   └── items/      # ItemRow (dnd-kit), ItemList, ItemForm, …
-│       ├── pages/          # ListsPage (/), ListDetailPage (/lists/:id)
+│       ├── pages/          # DashboardPage (/), ListsPage (/lists), ListDetailPage (/lists/:id),
+│       │                   #   TagsPage (/tags), ColorsPage (/colors)
+│       ├── test/           # Vitest infrastructure (setup, MSW server, handlers, fixtures, utils)
 │       └── utils/          # colorUtils.js (WCAG contrast helper)
 │
 ├── Makefile                # Developer convenience commands
@@ -256,11 +276,14 @@ make superuser          # Create a Django admin superuser
 ### Testing
 
 ```bash
-make test               # Run all tests
+make test               # Run all backend tests
 make test-unit          # Unit tests only  (-m unit)
 make test-integration   # Integration tests only  (-m integration)
-make test-cov           # Run tests and print a coverage report
-make test-watch         # Re-run tests automatically on file changes
+make test-cov           # Run backend tests with coverage report
+make test-watch         # Re-run backend tests automatically on file changes
+make test-frontend      # Run frontend tests with Vitest
+make test-frontend-watch # Re-run frontend tests on file changes
+make test-frontend-cov  # Run frontend tests with coverage report
 ```
 
 ### Code Quality
@@ -337,6 +360,8 @@ git tag -a "v0.1.0" -m "Version 0.1.0"
 
 ## Testing
 
+### Backend
+
 Tests use [pytest](https://pytest.org) with the following markers:
 
 | Marker | Description |
@@ -354,7 +379,7 @@ Tests use [pytest](https://pytest.org) with the following markers:
 | `load` | Load and performance tests |
 
 ```bash
-# Run all tests
+# Run all backend tests
 make test
 
 # Run by marker
@@ -373,6 +398,26 @@ make test-watch
 ```
 
 Pytest is configured in `pytest.toml`. Logs are written to `logs/pytest.log` (DEBUG level) and printed to the console at INFO level during test runs.
+
+### Frontend
+
+Frontend tests use **Vitest**, **React Testing Library**, and **MSW** (Mock Service Worker) to intercept API calls at the network layer. Test files are colocated with source files as `*.test.jsx`.
+
+```bash
+make test-frontend          # Run all frontend tests once
+make test-frontend-watch    # Re-run on file changes
+make test-frontend-cov      # Run with coverage report
+```
+
+Shared infrastructure in `frontend/src/test/`:
+
+| File | Purpose |
+|---|---|
+| `setup.js` | Imports `@testing-library/jest-dom` matchers and manages MSW server lifecycle |
+| `server.js` | MSW Node server instance shared across all test files |
+| `handlers.js` | Default API stubs for all routes (stats, colors, tags, lists) |
+| `fixtures.js` | Shared mock data (`mockColors`, `mockTags`, `mockStats`) |
+| `utils.jsx` | `renderWithProviders(ui, { route })` — wraps with `QueryClientProvider` and `MemoryRouter` |
 
 ### Coverage
 
@@ -439,6 +484,7 @@ All endpoints are under `/api/`. The Django admin interface is available at `/ad
 
 | Method | Endpoint | Description |
 |---|---|---|
+| `GET` | `/api/stats/` | Aggregate dashboard statistics (totals, due dates, importance breakdown, top lists and tags) |
 | `GET` / `POST` | `/api/colors/` | List or create colors |
 | `GET` / `PATCH` / `DELETE` | `/api/colors/:id/` | Retrieve, update, or delete a color |
 | `GET` / `POST` | `/api/tags/` | List or create tags |

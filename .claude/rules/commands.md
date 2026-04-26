@@ -32,21 +32,26 @@ make superuser          # Create a Django superuser
 ## Testing
 
 ```bash
-make test               # Run all tests
+make test               # Run all backend tests
 make test-unit          # Unit tests only  (-m unit)
 make test-integration   # Integration tests only  (-m integration)
 make test-cov           # Tests with coverage — enforces 80%, outputs to reports/coverage/
-make test-watch         # Re-run tests on file changes (ptw)
+make test-watch         # Re-run backend tests on file changes (ptw)
+make test-frontend      # Run frontend tests with Vitest
+make test-frontend-watch # Re-run frontend tests on file changes
+make test-frontend-cov  # Frontend tests with coverage report
 
-# Run a specific file or test directly
+# Run a specific backend file or test directly
 uv run pytest tests/test_something.py
 uv run pytest tests/test_something.py::test_function
 
-# Run with coverage manually (no fail-under enforcement)
+# Run backend with coverage manually (no fail-under enforcement)
 uv run pytest --cov=todo --cov-report=term-missing
 ```
 
-Coverage is configured in `.coveragerc.toml` (branch coverage, `todo` package only, migrations excluded). Report formats: terminal, HTML, XML (Codecov), JSON, LCOV. All file outputs go to `reports/coverage/` (gitignored).
+Backend coverage is configured in `.coveragerc.toml` (branch coverage, `todo` package only, migrations excluded). Report formats: terminal, HTML, XML (Codecov), JSON, LCOV. All file outputs go to `reports/coverage/` (gitignored).
+
+Frontend tests use **Vitest** + **React Testing Library** + **MSW** (Mock Service Worker). Test infrastructure lives in `frontend/src/test/`: `setup.js` (jest-dom + MSW lifecycle), `server.js` (MSW Node server), `handlers.js` (API stubs), `fixtures.js` (shared data), `utils.jsx` (`renderWithProviders` helper). Test files are colocated with source files (`*.test.jsx`).
 
 ## Code Quality
 

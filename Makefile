@@ -92,6 +92,18 @@ test-cov: ## Run tests with coverage — enforces 80% minimum, outputs to report
 test-watch: ## Re-run tests automatically on file changes
 	uv run ptw
 
+.PHONY: test-frontend
+test-frontend: ## Run frontend tests with Vitest
+	cd frontend && npm test
+
+.PHONY: test-frontend-watch
+test-frontend-watch: ## Re-run frontend tests on file changes
+	cd frontend && npm run test:watch
+
+.PHONY: test-frontend-cov
+test-frontend-cov: ## Run frontend tests with coverage report
+	cd frontend && npm run test:coverage
+
 # ── Code quality ───────────────────────────────────────────────────────────────
 
 .PHONY: lint
