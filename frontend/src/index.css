@@ -1,1 +1,94 @@
 @import "tailwindcss";
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-inset: var(--inset);
+
+  --color-body: var(--body);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+
+  --color-rule: var(--rule);
+  --color-faint: var(--faint);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+
+  --color-error-bg: var(--error-bg);
+  --color-error-border: var(--error-border);
+  --color-error-text: var(--error-text);
+
+  --color-caution: var(--caution);
+  --color-track: var(--track);
+}
+
+:root {
+  color-scheme: light;
+
+  /* One Light */
+  --canvas: #f0f0f1;
+  --surface: #fafafa;
+  --inset: #e8e8e9;
+
+  --body: #383a42;
+  --secondary: #696c77;
+  --muted: #a0a1a7;
+
+  --rule: #d3d3d4;
+  --faint: #e7e7e7;
+
+  --primary: #4078f2;
+  --primary-hover: #3568e0;
+
+  --success: #50a14f;
+  --success-hover: #3f8a3e;
+
+  --danger: #e45649;
+  --danger-hover: #c73b30;
+
+  --error-bg: #fce8e6;
+  --error-border: #f0c4c1;
+  --error-text: #c0392b;
+
+  --caution: #986801;
+  --track: #d3d3d4;
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* One Dark */
+  --canvas: #21252b;
+  --surface: #282c34;
+  --inset: #1d2026;
+
+  --body: #abb2bf;
+  --secondary: #828997;
+  --muted: #5c6370;
+
+  --rule: #3e4452;
+  --faint: #2c313c;
+
+  --primary: #61afef;
+  --primary-hover: #4d9bd9;
+
+  --success: #98c379;
+  --success-hover: #7aaa5c;
+
+  --danger: #e06c75;
+  --danger-hover: #c9535e;
+
+  --error-bg: #2d1f22;
+  --error-border: #4a2830;
+  --error-text: #e06c75;
+
+  --caution: #e5c07b;
+  --track: #3e4452;
+}

@@ -6,9 +6,9 @@ import DragHandle from "./DragHandle";
 import ItemCheckbox from "./ItemCheckbox";
 
 const IMPORTANCE_STYLES = {
-  1: { label: "High", className: "text-red-600 font-semibold" },
-  5: { label: "Med", className: "text-amber-600 font-semibold" },
-  9: { label: "Low", className: "text-gray-400" },
+  1: { label: "High", className: "text-danger font-semibold" },
+  5: { label: "Med", className: "text-caution font-semibold" },
+  9: { label: "Low", className: "text-muted" },
 };
 
 export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onExport }) {
@@ -26,7 +26,7 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onEx
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-start gap-3 bg-white rounded-xl p-3 shadow-sm border border-gray-100"
+      className="flex items-start gap-3 bg-surface rounded-xl p-3 shadow-sm border border-faint"
     >
       <DragHandle {...attributes} {...listeners} />
       <ItemCheckbox
@@ -37,7 +37,7 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onEx
         <div className="flex items-baseline gap-2">
           <p
             className={`font-medium text-sm leading-snug ${
-              item.completed ? "line-through text-gray-400" : "text-gray-800"
+              item.completed ? "line-through text-muted" : "text-body"
             }`}
           >
             {item.title}
@@ -49,7 +49,7 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onEx
           )}
         </div>
         {item.description && (
-          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{item.description}</p>
+          <p className="text-xs text-muted mt-0.5 line-clamp-2">{item.description}</p>
         )}
         {item.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1.5">
@@ -59,7 +59,7 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onEx
           </div>
         )}
         {item.due_date && (
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-muted mt-1">
             Due {new Date(item.due_date).toLocaleDateString()}
           </p>
         )}
@@ -67,20 +67,20 @@ export default function ItemRow({ item, onEdit, onDelete, onToggleComplete, onEx
       <div className="flex gap-2 shrink-0">
         <button
           onClick={() => onExport(item)}
-          className="text-xs text-emerald-600 hover:underline"
+          className="text-xs text-success hover:underline"
           title="Export to calendar"
         >
           Export
         </button>
         <button
           onClick={() => onEdit(item)}
-          className="text-xs text-blue-600 hover:underline"
+          className="text-xs text-primary hover:underline"
         >
           Edit
         </button>
         <button
           onClick={() => onDelete(item)}
-          className="text-xs text-red-500 hover:underline"
+          className="text-xs text-danger hover:underline"
         >
           Delete
         </button>

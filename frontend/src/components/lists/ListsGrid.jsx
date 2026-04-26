@@ -25,7 +25,7 @@ export default function ListsGrid({ lists }) {
 
   if (lists.length === 0) {
     return (
-      <p className="text-center text-gray-400 py-16">
+      <p className="text-center text-muted py-16">
         No lists yet. Create one to get started!
       </p>
     );
@@ -62,21 +62,21 @@ export default function ListsGrid({ lists }) {
         <Modal onClose={() => setDeleting(null)}>
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Delete &ldquo;{deleting.name}&rdquo;?</h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-secondary">
               This will permanently delete the list and all its items.
             </p>
-            {deleteError && <p className="text-sm text-red-600">{deleteError}</p>}
+            {deleteError && <p className="text-sm text-danger">{deleteError}</p>}
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleting(null)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-secondary hover:text-body"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleteList.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-danger text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-danger-hover transition-colors"
               >
                 {deleteList.isPending ? "Deleting…" : "Delete"}
               </button>

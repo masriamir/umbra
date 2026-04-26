@@ -77,7 +77,7 @@ export default function ListDetailPage() {
       <div className="flex items-center gap-4 mb-6">
         <Link
           to="/"
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+          className="text-primary hover:text-primary-hover text-sm font-medium transition-colors"
         >
           ← Back
         </Link>
@@ -87,19 +87,19 @@ export default function ListDetailPage() {
               className="w-4 h-4 rounded-full"
               style={{ backgroundColor: list.color.hex_code }}
             />
-            <h1 className="text-2xl font-bold text-gray-900">{list.name}</h1>
+            <h1 className="text-2xl font-bold text-body">{list.name}</h1>
           </div>
         )}
         <div className="ml-auto flex gap-2">
           <button
             onClick={handleExportList}
-            className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors shadow-sm"
+            className="bg-success text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-success-hover transition-colors shadow-sm"
           >
             Export .ics
           </button>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
+            className="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary-hover transition-colors shadow-sm"
           >
             + Add Item
           </button>
@@ -143,18 +143,18 @@ export default function ListDetailPage() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Export to Calendar</h2>
             {exportWarningItems.length === 1 && !exportWarningItems[0].due_date ? (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-secondary">
                 <strong>&ldquo;{exportWarningItems[0].title}&rdquo;</strong> has no due
                 date and cannot be exported to a calendar.
               </p>
             ) : (
               <>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-secondary">
                   The following {exportWarningItems.length} item
                   {exportWarningItems.length !== 1 ? "s" : ""} have no due date and will
                   be skipped:
                 </p>
-                <ul className="text-sm text-gray-500 list-disc list-inside space-y-0.5 max-h-40 overflow-y-auto">
+                <ul className="text-sm text-muted list-disc list-inside space-y-0.5 max-h-40 overflow-y-auto">
                   {exportWarningItems.map((i) => (
                     <li key={i.id}>{i.title}</li>
                   ))}
@@ -164,7 +164,7 @@ export default function ListDetailPage() {
             <div className="flex justify-end gap-3 pt-1">
               <button
                 onClick={() => setExportWarningItems(null)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-secondary hover:text-body"
               >
                 Cancel
               </button>
@@ -174,7 +174,7 @@ export default function ListDetailPage() {
                     setExportWarningItems(null);
                     triggerListExport();
                   }}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                  className="px-4 py-2 bg-success text-white rounded-lg text-sm font-medium hover:bg-success-hover transition-colors"
                 >
                   Export anyway
                 </button>
@@ -188,19 +188,19 @@ export default function ListDetailPage() {
         <Modal onClose={() => setDeletingItem(null)}>
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Delete &ldquo;{deletingItem.title}&rdquo;?</h2>
-            <p className="text-sm text-gray-600">This item will be permanently removed.</p>
-            {deleteError && <p className="text-sm text-red-600">{deleteError}</p>}
+            <p className="text-sm text-secondary">This item will be permanently removed.</p>
+            {deleteError && <p className="text-sm text-danger">{deleteError}</p>}
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeletingItem(null)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-secondary hover:text-body"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleteItem.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-danger text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-danger-hover transition-colors"
               >
                 {deleteItem.isPending ? "Deleting…" : "Delete"}
               </button>

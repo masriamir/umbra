@@ -44,7 +44,7 @@ export default function ColorPicker({ value, onChange }) {
         <button
           type="button"
           onClick={() => setShowCustom((s) => !s)}
-          className="w-9 h-9 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-400 hover:border-gray-600 hover:text-gray-600 transition-colors text-lg leading-none"
+          className="w-9 h-9 rounded-full border-2 border-dashed border-rule flex items-center justify-center text-muted hover:border-secondary hover:text-secondary transition-colors text-lg leading-none"
           title="Custom color"
         >
           +
@@ -52,36 +52,36 @@ export default function ColorPicker({ value, onChange }) {
       </div>
 
       {showCustom && (
-        <div className="space-y-3 p-4 border rounded-xl bg-gray-50">
+        <div className="space-y-3 p-4 border border-rule rounded-xl bg-inset">
           <HexColorPicker color={customHex} onChange={setCustomHex} style={{ width: "100%" }} />
           <div className="flex items-center gap-2 mt-2">
             <div
-              className="w-8 h-8 rounded-full border border-gray-300 shrink-0"
+              className="w-8 h-8 rounded-full border border-rule shrink-0"
               style={{ backgroundColor: customHex }}
             />
-            <span className="text-sm text-gray-600 font-mono">{customHex}</span>
+            <span className="text-sm text-secondary font-mono">{customHex}</span>
           </div>
           <input
             type="text"
             placeholder={`Name (default: ${customHex})`}
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-rule rounded-lg px-3 py-1.5 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
           />
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {error && <p className="text-xs text-danger">{error}</p>}
           <div className="flex gap-2">
             <button
               type="button"
               onClick={handleSaveCustom}
               disabled={createColor.isPending}
-              className="flex-1 bg-blue-600 text-white rounded-lg py-1.5 text-sm font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors"
+              className="flex-1 bg-primary text-white rounded-lg py-1.5 text-sm font-medium disabled:opacity-50 hover:bg-primary-hover transition-colors"
             >
               {createColor.isPending ? "Saving…" : "Save & Use"}
             </button>
             <button
               type="button"
               onClick={() => setShowCustom(false)}
-              className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+              className="px-3 py-1.5 text-sm text-secondary hover:text-body transition-colors"
             >
               Cancel
             </button>

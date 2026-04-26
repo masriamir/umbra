@@ -36,7 +36,7 @@ export default function ItemList({ listId, items, onEdit, onDelete, onToggleComp
 
   if (orderedItems.length === 0) {
     return (
-      <p className="text-center text-gray-400 py-12 text-sm">
+      <p className="text-center text-muted py-12 text-sm">
         No items yet. Add one above!
       </p>
     );

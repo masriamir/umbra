@@ -3,7 +3,7 @@ export default function DragHandle(props) {
     <button
       type="button"
       {...props}
-      className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none p-1 shrink-0 focus:outline-none"
+      className="text-muted hover:text-secondary cursor-grab active:cursor-grabbing touch-none p-1 shrink-0 focus:outline-none"
       aria-label="Drag to reorder"
     >
       <svg

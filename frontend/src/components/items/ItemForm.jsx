@@ -57,7 +57,7 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
       </h2>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+        <label className="block text-sm font-medium text-secondary mb-1">Title</label>
         <input
           type="text"
           required
@@ -65,24 +65,24 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What needs to be done?"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-rule rounded-lg px-3 py-2 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-secondary mb-1">Description</label>
         <textarea
           maxLength={256}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Additional details…"
           rows={3}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full border border-rule rounded-lg px-3 py-2 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+        <label className="block text-sm font-medium text-secondary mb-2">Tags</label>
         <TagSelector
           selectedIds={tagIds}
           onChange={setTagIds}
@@ -91,24 +91,24 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+        <label className="block text-sm font-medium text-secondary mb-1">Due Date</label>
         <input
           type="datetime-local"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-rule rounded-lg px-3 py-2 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-secondary mb-1">
             Importance
           </label>
           <select
             value={importance}
             onChange={(e) => setImportance(parseInt(e.target.value, 10))}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full border border-rule rounded-lg px-3 py-2 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
           >
             {IMPORTANCE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -118,7 +118,7 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-secondary mb-1">
             Duration (minutes)
           </label>
           <input
@@ -127,7 +127,7 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
             value={durationMinutes}
             onChange={(e) => setDurationMinutes(e.target.value)}
             placeholder="30"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-rule rounded-lg px-3 py-2 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
       </div>
@@ -138,27 +138,27 @@ export default function ItemForm({ initialValues, onSubmit, onCancel, isPending 
           id="completed"
           checked={completed}
           onChange={(e) => setCompleted(e.target.checked)}
-          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="w-4 h-4 rounded border-rule text-primary focus:ring-primary"
         />
-        <label htmlFor="completed" className="text-sm text-gray-700">
+        <label htmlFor="completed" className="text-sm text-secondary">
           Mark as completed
         </label>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex justify-end gap-3 pt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+          className="px-4 py-2 text-sm text-secondary hover:text-body transition-colors"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isPending || !title.trim()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-primary-hover transition-colors"
         >
           {isPending ? "Saving…" : "Save"}
         </button>

@@ -47,7 +47,7 @@ export default function TagSelector({ selectedIds, onChange, availableColors }) 
             key={tag.id}
             type="button"
             onClick={() => toggle(tag.id)}
-            className={`transition-opacity ${selectedIds.includes(tag.id) ? "opacity-100 ring-2 ring-offset-1 ring-gray-600 rounded-full" : "opacity-50 hover:opacity-80"}`}
+            className={`transition-opacity ${selectedIds.includes(tag.id) ? "opacity-100 ring-2 ring-offset-1 ring-secondary ring-offset-surface rounded-full" : "opacity-50 hover:opacity-80"}`}
           >
             <TagBadge tag={tag} />
           </button>
@@ -55,7 +55,7 @@ export default function TagSelector({ selectedIds, onChange, availableColors }) 
         <button
           type="button"
           onClick={() => setShowNew((s) => !s)}
-          className="text-xs text-blue-600 hover:underline"
+          className="text-xs text-primary hover:underline"
         >
           + New tag
         </button>
@@ -68,12 +68,12 @@ export default function TagSelector({ selectedIds, onChange, availableColors }) 
             placeholder="Tag name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-rule rounded-lg px-2 py-1 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <select
             value={newColorId}
             onChange={(e) => setNewColorId(Number(e.target.value))}
-            className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-rule rounded-lg px-2 py-1 text-sm bg-surface text-body focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Color…</option>
             {(availableColors ?? []).map((c) => (
@@ -86,11 +86,11 @@ export default function TagSelector({ selectedIds, onChange, availableColors }) 
             type="button"
             onClick={handleCreateTag}
             disabled={!newName.trim() || !newColorId || createTag.isPending}
-            className="bg-blue-600 text-white px-2 py-1 rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors"
+            className="bg-primary text-white px-2 py-1 rounded-lg text-sm disabled:opacity-50 hover:bg-primary-hover transition-colors"
           >
             Add
           </button>
-          {error && <p className="text-xs text-red-600 w-full">{error}</p>}
+          {error && <p className="text-xs text-danger w-full">{error}</p>}
         </div>
       )}
     </div>

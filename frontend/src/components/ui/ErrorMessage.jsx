@@ -5,7 +5,7 @@ export default function ErrorMessage({ error }) {
     "An unexpected error occurred.";
 
   return (
-    <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-red-700 text-sm">
+    <div className="rounded-lg bg-error-bg border border-error-border p-4 text-error-text text-sm">
       {message}
     </div>
   );
