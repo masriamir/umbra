@@ -10,6 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Testing:** Backend uses `pytest` with `@pytest.mark.integration` / `@pytest.mark.api` markers. Frontend uses **Vitest + React Testing Library + MSW** — test files are colocated as `*.test.jsx`, shared infrastructure is in `frontend/src/test/`.
 
+**Security:** Run `/security-audit` (or `/security-audit backend|frontend|deps`) to trigger a full AI-powered security review. A `PreToolUse` hook on `git commit` automatically blocks commits that stage `.env` files or obvious hardcoded credentials — see `.claude/hooks/pre-commit-check.sh`.
+
 Detailed rules are organized in `.claude/rules/`:
 - `commands.md` — Makefile targets and direct CLI commands
 - `environment.md` — Prerequisites, `.env` variables, dev server wiring

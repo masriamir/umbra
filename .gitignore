@@ -32,6 +32,9 @@ staticfiles/
 reports/
 logs/*.log
 
+# Claude Code — local-only settings (personal permissions, not shared)
+.claude/settings.local.json
+
 # IDE
 .idea/
 .vscode/
