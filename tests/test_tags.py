@@ -23,7 +23,7 @@ def tag_url(pk: int) -> str:
 def test_tag_list_empty(api_client: APIClient) -> None:
     response = api_client.get(TAGS_URL)
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json()["results"] == []
 
 
 @pytest.mark.integration
@@ -32,7 +32,7 @@ def test_tag_list_empty(api_client: APIClient) -> None:
 def test_tag_list_returns_existing(api_client: APIClient, tag: Tag) -> None:
     response = api_client.get(TAGS_URL)
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["results"]
     assert len(data) == 1
     assert data[0]["id"] == tag.pk
     assert data[0]["name"] == tag.name

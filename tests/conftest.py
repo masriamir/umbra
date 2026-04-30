@@ -59,6 +59,15 @@ def django_db_setup(
     request.addfinalizer(teardown)
 
 
+@pytest.fixture(autouse=True)
+def disable_throttling(settings) -> None:
+    """Disable DRF throttling for all tests to prevent rate-limit interference."""
+    settings.REST_FRAMEWORK = {
+        **settings.REST_FRAMEWORK,
+        "DEFAULT_THROTTLE_CLASSES": [],
+    }
+
+
 @pytest.fixture
 def api_client() -> APIClient:
     return APIClient()

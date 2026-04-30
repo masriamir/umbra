@@ -29,7 +29,7 @@ def reorder_url(list_pk: int) -> str:
 def test_item_list_empty(api_client: APIClient, todo_list: TodoList) -> None:
     response = api_client.get(items_url(todo_list.pk))
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json()["results"] == []
 
 
 @pytest.mark.integration
@@ -38,7 +38,7 @@ def test_item_list_empty(api_client: APIClient, todo_list: TodoList) -> None:
 def test_item_list_returns_existing(api_client: APIClient, todo_item: TodoItem) -> None:
     response = api_client.get(items_url(todo_item.list.pk))
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["results"]
     assert len(data) == 1
     assert data[0]["id"] == todo_item.pk
     assert data[0]["title"] == todo_item.title
@@ -56,7 +56,7 @@ def test_item_list_scoped_to_list(
 
     response = api_client.get(items_url(todo_item.list.pk))
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()["results"]) == 1
 
 
 # ── Create ─────────────────────────────────────────────────────────────────────
