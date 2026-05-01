@@ -1,7 +1,7 @@
 [phases.setup]
-# nodejs_24 is not auto-detected by nixpacks because this is primarily a
+# nodejs_22 is not auto-detected by nixpacks because this is primarily a
 # Python project; it is required to build the React SPA in the build phase.
-nixPkgs = ["nodejs_24"]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
 # Override nixpacks' auto-generated install step, which pins uv==0.4.30 (too
