@@ -18,7 +18,9 @@ cp .env.sample .env
 | Variable | Description |
 |---|---|
 | `DEBUG` | Enable Django debug mode |
-| `SECRET_KEY` | Django secret key |
+| `SECRET_KEY` | Django secret key (required; no default) |
+| `ALLOWED_HOSTS` | Comma-separated hostnames Django will serve (default: `localhost,127.0.0.1`) |
+| `DATABASE_URL` | Full DB URL — takes precedence over `DB_*` vars; injected automatically by Railway |
 | `DB_NAME` | PostgreSQL database name |
 | `DB_USER` | PostgreSQL username |
 | `DB_PASSWORD` | PostgreSQL password |
@@ -27,7 +29,17 @@ cp .env.sample .env
 | `DJANGO_SUPERUSER_USERNAME` | Superuser username for `createsuperuser` |
 | `DJANGO_SUPERUSER_PASSWORD` | Superuser password |
 
-Settings are loaded via `django-environ` from `.env`.
+Settings are loaded via `django-environ` from `.env`. In production (Railway), environment variables are injected directly — the `.env` file is not present and that is expected.
+
+## Deployment (Railway)
+
+`railway.toml` configures the Railway deployment:
+
+- **Build:** installs `uv`, syncs prod deps, builds the React SPA (`npm ci && npm run build`), then runs `collectstatic`.
+- **Start:** runs `migrate` (idempotent), then starts `gunicorn` on `$PORT` with 2 workers.
+- **Health check:** `GET /health/` with a 30-second timeout.
+- **Static files:** WhiteNoise serves both the React SPA (`frontend/dist/`) and Django admin assets (`staticfiles/`). In development WhiteNoise is not loaded — `runserver` handles static files directly.
+- **Database:** attach Railway's PostgreSQL plugin; it injects `DATABASE_URL` automatically.
 
 ## Dev Server Wiring
 
