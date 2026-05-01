@@ -4,14 +4,21 @@
 
 import { http, HttpResponse } from "msw";
 
-import { mockColors, mockStats, mockTags } from "./fixtures";
+import { mockColors, mockStats, mockTags, mockUser } from "./fixtures";
 
 export const handlers = [
+  // Auth
+  http.get("/api/auth/me/", () => HttpResponse.json(mockUser)),
+  http.post("/api/auth/login/", () => HttpResponse.json(mockUser)),
+  http.post("/api/auth/logout/", () => new HttpResponse(null, { status: 204 })),
+
   // Stats
   http.get("/api/stats/", () => HttpResponse.json(mockStats)),
 
   // Colors
-  http.get("/api/colors/", () => HttpResponse.json(mockColors)),
+  http.get("/api/colors/", () =>
+    HttpResponse.json({ count: mockColors.length, next: null, previous: null, results: mockColors }),
+  ),
   http.post("/api/colors/", async ({ request }) => {
     const body = await request.json();
     return HttpResponse.json(
@@ -32,7 +39,9 @@ export const handlers = [
   http.delete("/api/colors/:id/", () => new HttpResponse(null, { status: 204 })),
 
   // Tags
-  http.get("/api/tags/", () => HttpResponse.json(mockTags)),
+  http.get("/api/tags/", () =>
+    HttpResponse.json({ count: mockTags.length, next: null, previous: null, results: mockTags }),
+  ),
   http.post("/api/tags/", async ({ request }) => {
     const body = await request.json();
     const color = mockColors.find((c) => c.id === body.color_id) ?? mockColors[0];
@@ -53,6 +62,8 @@ export const handlers = [
   }),
   http.delete("/api/tags/:id/", () => new HttpResponse(null, { status: 204 })),
 
-  // Lists (used by DashboardPage links, not primary target of these tests)
-  http.get("/api/lists/", () => HttpResponse.json([])),
+  // Lists
+  http.get("/api/lists/", () =>
+    HttpResponse.json({ count: 0, next: null, previous: null, results: [] }),
+  ),
 ];

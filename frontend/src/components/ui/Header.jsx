@@ -4,6 +4,8 @@
 
 import { Link, NavLink } from "react-router-dom";
 
+import { useAuth } from "../../context/AuthContext";
+
 /**
  * Sun icon used to indicate "switch to light mode".
  *
@@ -75,7 +77,8 @@ function navLinkClass({ isActive }) {
 }
 
 /**
- * Application-wide header displaying the app name, nav links, and dark mode toggle.
+ * Application-wide header displaying the app name, nav links, dark mode toggle,
+ * the authenticated user's username, and a logout button.
  *
  * @param {object} props
  * @param {boolean} props.darkMode - Whether dark mode is currently active.
@@ -83,6 +86,8 @@ function navLinkClass({ isActive }) {
  * @returns {JSX.Element}
  */
 export default function Header({ darkMode, onToggle }) {
+  const { user, logout } = useAuth();
+
   return (
     <header className="bg-surface border-b border-rule sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
@@ -107,6 +112,18 @@ export default function Header({ darkMode, onToggle }) {
         >
           {darkMode ? <SunIcon /> : <MoonIcon />}
         </button>
+
+        {user && (
+          <>
+            <span className="text-sm text-secondary shrink-0">{user.username}</span>
+            <button
+              onClick={logout}
+              className="text-sm text-secondary hover:text-body transition-colors shrink-0"
+            >
+              Log out
+            </button>
+          </>
+        )}
       </div>
     </header>
   );

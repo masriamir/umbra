@@ -21,7 +21,7 @@ describe("ColorsPage", () => {
     });
 
     it("shows an empty message when there are no colors", async () => {
-      server.use(http.get("/api/colors/", () => HttpResponse.json([])));
+      server.use(http.get("/api/colors/", () => HttpResponse.json({ count: 0, next: null, previous: null, results: [] })));
       renderWithProviders(<ColorsPage />);
       await screen.findByText("No colors yet. Create one to get started.");
     });

@@ -2,15 +2,18 @@
  * @fileoverview Tests for the Header component.
  */
 
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
+import { server } from "../../test/server";
+import { mockUser } from "../../test/fixtures";
+import { renderWithProviders } from "../../test/utils";
 import Header from "./Header";
 
 /**
- * Renders Header inside a MemoryRouter at the given route.
+ * Renders Header inside all required providers at the given route.
  *
  * @param {object} [props]
  * @param {boolean} [props.darkMode=false]
@@ -18,10 +21,9 @@ import Header from "./Header";
  * @param {string} [props.route="/"]
  */
 function renderHeader({ darkMode = false, onToggle = vi.fn(), route = "/" } = {}) {
-  return render(
-    <MemoryRouter initialEntries={[route]}>
-      <Header darkMode={darkMode} onToggle={onToggle} />
-    </MemoryRouter>,
+  return renderWithProviders(
+    <Header darkMode={darkMode} onToggle={onToggle} />,
+    { route },
   );
 }
 
@@ -84,6 +86,43 @@ describe("Header", () => {
       renderHeader({ onToggle });
       await userEvent.click(screen.getByLabelText("Switch to dark mode"));
       expect(onToggle).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("user session", () => {
+    it("displays the authenticated username", async () => {
+      renderHeader();
+      await screen.findByText(mockUser.username);
+    });
+
+    it("shows a Log out button when authenticated", async () => {
+      renderHeader();
+      await screen.findByRole("button", { name: "Log out" });
+    });
+
+    it("does not show username or logout when unauthenticated", async () => {
+      server.use(
+        http.get("/api/auth/me/", () => new HttpResponse(null, { status: 403 })),
+      );
+      renderHeader();
+      // Wait for the auth check to finish (loading → resolved with no user)
+      await screen.findByLabelText("Switch to dark mode");
+      expect(screen.queryByText(mockUser.username)).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Log out" })).not.toBeInTheDocument();
+    });
+
+    it("calls logout and navigates to /login on Log out click", async () => {
+      let logoutCalled = false;
+      server.use(
+        http.post("/api/auth/logout/", () => {
+          logoutCalled = true;
+          return new HttpResponse(null, { status: 204 });
+        }),
+      );
+      const user = userEvent.setup();
+      renderHeader();
+      await user.click(await screen.findByRole("button", { name: "Log out" }));
+      expect(logoutCalled).toBe(true);
     });
   });
 });

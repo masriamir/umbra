@@ -1,7 +1,7 @@
 import client from "./client";
 
 export const listItems = (listId) =>
-  client.get(`/lists/${listId}/items/`).then((r) => r.data);
+  client.get(`/lists/${listId}/items/`).then((r) => r.data.results);
 
 export const createItem = (listId, data) =>
   client.post(`/lists/${listId}/items/`, data).then((r) => r.data);

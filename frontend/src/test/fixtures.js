@@ -2,6 +2,11 @@
  * @fileoverview Shared fixture data for frontend tests.
  */
 
+export const mockUser = {
+  id: 1,
+  username: "testuser",
+};
+
 export const mockColors = [
   {
     id: 1,

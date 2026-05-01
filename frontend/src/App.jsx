@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/ui/Header";
 import ColorsPage from "./pages/ColorsPage";
 import DashboardPage from "./pages/DashboardPage";
 import ListDetailPage from "./pages/ListDetailPage";
 import ListsPage from "./pages/ListsPage";
+import LoginPage from "./pages/LoginPage";
 import TagsPage from "./pages/TagsPage";
 
 export default function App() {
@@ -27,15 +30,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-body">
-      <Header darkMode={darkMode} onToggle={toggleDarkMode} />
-      <Routes>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/lists" element={<ListsPage />} />
-        <Route path="/lists/:id" element={<ListDetailPage />} />
-        <Route path="/tags" element={<TagsPage />} />
-        <Route path="/colors" element={<ColorsPage />} />
-      </Routes>
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen bg-canvas text-body">
+        <Header darkMode={darkMode} onToggle={toggleDarkMode} />
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/lists" element={<ListsPage />} />
+            <Route path="/lists/:id" element={<ListDetailPage />} />
+            <Route path="/tags" element={<TagsPage />} />
+            <Route path="/colors" element={<ColorsPage />} />
+          </Route>
+        </Routes>
+      </div>
+    </AuthProvider>
   );
 }

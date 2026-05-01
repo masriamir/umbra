@@ -21,7 +21,7 @@ describe("TagsPage", () => {
     });
 
     it("shows an empty message when there are no tags", async () => {
-      server.use(http.get("/api/tags/", () => HttpResponse.json([])));
+      server.use(http.get("/api/tags/", () => HttpResponse.json({ count: 0, next: null, previous: null, results: [] })));
       renderWithProviders(<TagsPage />);
       await screen.findByText("No tags yet. Create one to get started.");
     });
