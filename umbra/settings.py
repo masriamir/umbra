@@ -17,7 +17,11 @@ env = environ.Env(
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(BASE_DIR / ".env")
+# Load .env in development. In production (Railway), vars are injected directly
+# into the environment — the file won't exist and that's fine.
+_env_file = BASE_DIR / ".env"
+if _env_file.is_file():
+    environ.Env.read_env(_env_file)
 
 # SECRET_KEY is required — no fallback. Raise ImproperlyConfigured if absent.
 SECRET_KEY = env("SECRET_KEY")
@@ -42,8 +46,18 @@ INSTALLED_APPS = [
     "todo.apps.TodoConfig",
 ]
 
+_whitenoise = (
+    # WhiteNoise must come directly after SecurityMiddleware so it can serve
+    # static files and the React SPA before any other middleware runs.
+    # Not needed in development — Django's runserver handles static files.
+    ["whitenoise.middleware.WhiteNoiseMiddleware"]
+    if not DEBUG
+    else []
+)
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    *_whitenoise,
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -59,7 +73,9 @@ ROOT_URLCONF = "umbra.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # Include the React build output so TemplateView can serve index.html
+        # for the SPA catch-all route.
+        "DIRS": [BASE_DIR / "frontend" / "dist"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -77,19 +93,25 @@ WSGI_APPLICATION = "umbra.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+#
+# Railway injects DATABASE_URL automatically when a PostgreSQL plugin is attached.
+# For local development, fall back to individual DB_* environment variables.
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "OPTIONS": {
-            "service": "ef_todo",
-            "passfile": ".pgpass",
+if env("DATABASE_URL", default=None):
+    DATABASES = {"default": env.db("DATABASE_URL")}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_NAME", default="postgres"),
+            "USER": env("DB_USER", default="postgres"),
+            "PASSWORD": env("DB_PASSWORD", default=""),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="5432"),
+            "CONN_MAX_AGE": 0,
+            "CONN_HEALTH_CHECKS": True,
         },
-        "CHARSET": "en_US.UTF-8",
-        "CONN_MAX_AGE": 0,
-        "CONN_HEALTH_CHECKS": True,
-    },
-}
+    }
 
 
 # Password validation
@@ -126,7 +148,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+
+# collectstatic writes Django's own static files (admin CSS/JS) here.
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Serve the React SPA from the build output directory.
+# WhiteNoiseMiddleware intercepts requests for files found here before URL
+# routing, so /assets/main.js etc. are served without hitting Django views.
+# Only activate when the build directory exists (not in a fresh dev checkout).
+_frontend_dist = BASE_DIR / "frontend" / "dist"
+if _frontend_dist.is_dir():
+    WHITENOISE_ROOT = _frontend_dist
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
@@ -155,6 +188,14 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # Use WhiteNoise's compressed+hashed storage in production for long-lived
+    # browser caching of Django's own static files (admin CSS/JS).
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 
 # --- Django REST Framework ----------------------------------------------------
