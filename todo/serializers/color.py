@@ -19,7 +19,7 @@ class ColorSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["created_date", "updated_date"]
 
-    def _user_color_qs(self) -> "serializers.QuerySet[Color]":  # type: ignore[name-defined]
+    def _user_color_qs(self) -> serializers.QuerySet[Color]:  # type: ignore[name-defined]
         request = self.context.get("request")
         if not (request and request.user.is_authenticated):
             return Color.objects.none()

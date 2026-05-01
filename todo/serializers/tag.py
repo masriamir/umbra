@@ -43,8 +43,6 @@ class TagSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value: str) -> str:
         """Reject duplicate tag names within the same user's tag set."""
-        from todo.models import Tag
-
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             qs = Tag.objects.filter(owner=request.user, name=value)
