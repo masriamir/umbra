@@ -14,9 +14,10 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 - [Versioning](#versioning)
 - [Testing](#testing)
 - [Code Quality](#code-quality)
+- [Authentication](#authentication)
 - [API Reference](#api-reference)
 - [Data Model](#data-model)
-- [Production Build](#production-build)
+- [Deployment](#deployment)
 
 ---
 
@@ -63,6 +64,12 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 - Top lists by item count with per-list completion percentage
 - Most-used tags ranked by item usage count
 
+### Authentication
+- Session-based login with a dedicated Login page
+- All data is scoped to the authenticated user — no user can access another's lists, tags, or colors
+- The application header shows the logged-in username and a logout button
+- Unauthenticated requests are redirected to `/login` automatically
+
 ### Theming
 - One Light and One Dark color schemes toggled from the application header
 - Preference is persisted to `localStorage` and restored on next visit
@@ -82,7 +89,10 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 | psycopg | 3.3+ | PostgreSQL driver |
 | django-environ | 0.13+ | Environment config |
 | django-cors-headers | 4.9+ | CORS handling |
+| django-csp | 4.0+ | Content Security Policy headers |
 | icalendar | 7.0+ | iCalendar (.ics) generation |
+| WhiteNoise | 6.12+ | Static file serving (production) |
+| Gunicorn | 25.3+ | WSGI application server (production) |
 | uv | 0.9.9+ | Dependency management |
 
 ### Frontend
@@ -117,8 +127,9 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 ```
 umbra/
 ├── umbra/                  # Django project config
-│   ├── settings.py         # Settings (reads from .env)
-│   ├── urls.py             # Root URL routing
+│   ├── settings.py         # Settings (reads from .env or environment)
+│   ├── throttles.py        # LoginRateThrottle (5 req/min per IP)
+│   ├── urls.py             # Root URL routing + health check
 │   ├── wsgi.py
 │   └── asgi.py
 │
@@ -129,22 +140,29 @@ umbra/
 │   │   ├── tag.py          # Tag model
 │   │   ├── todo.py         # TodoList, TodoItem, TodoItemTag
 │   │   └── validators.py   # HexCodeValidator
-│   ├── serializers/        # DRF serializers
+│   ├── serializers/        # DRF serializers (owner-scoped querysets)
 │   ├── migrations/         # Database migrations
-│   ├── views.py            # ModelViewSets + reorder action
-│   ├── urls.py             # API routes
+│   ├── views.py            # ModelViewSets, reorder + export actions, stats view
+│   ├── auth_views.py       # login_view, logout_view, me_view
+│   ├── urls.py             # API routes (CRUD + auth + stats + export)
 │   └── admin.py            # Admin registrations
 │
 ├── frontend/               # React SPA
 │   └── src/
-│       ├── api/            # Axios functions per resource (colors, tags, lists, items, stats)
+│       ├── api/
+│       │   ├── client.js   # Axios instance (CSRF interceptor + 403 → /login redirect)
+│       │   ├── auth.js     # login(), logout(), getMe()
+│       │   └── …           # colors.js, tags.js, lists.js, items.js, stats.js
+│       ├── context/
+│       │   └── AuthContext.jsx  # AuthProvider, useAuth() hook
 │       ├── hooks/          # TanStack Query wrappers (useColors, useTags, useLists, useItems, useStats, …)
 │       ├── components/
+│       │   ├── ProtectedRoute.jsx  # Redirects unauthenticated users to /login
 │       │   ├── ui/         # Shared primitives (Header, Modal, Spinner, ColorPicker, …)
 │       │   ├── lists/      # ListCard, ListForm, ListsGrid
 │       │   └── items/      # ItemRow (dnd-kit), ItemList, ItemForm, …
-│       ├── pages/          # DashboardPage (/), ListsPage (/lists), ListDetailPage (/lists/:id),
-│       │                   #   TagsPage (/tags), ColorsPage (/colors)
+│       ├── pages/          # LoginPage (/login), DashboardPage (/), ListsPage (/lists),
+│       │                   #   ListDetailPage (/lists/:id), TagsPage (/tags), ColorsPage (/colors)
 │       ├── test/           # Vitest infrastructure (setup, MSW server, handlers, fixtures, utils)
 │       └── utils/          # colorUtils.js (WCAG contrast helper)
 │
@@ -152,6 +170,8 @@ umbra/
 ├── pyproject.toml          # Python project metadata and dependencies
 ├── mypy.ini                # Mypy configuration
 ├── pytest.toml             # Pytest configuration
+├── railway.toml            # Railway deployment configuration
+├── nixpacks.toml           # Nixpacks build overrides (Node.js version, uv bootstrap)
 ├── .env.sample             # Environment variable template
 └── .python-version         # Pins Python 3.14.4
 ```
@@ -233,7 +253,9 @@ cp .env.sample .env
 | Variable | Description | Default |
 |---|---|---|
 | `DEBUG` | Enable Django debug mode | `False` |
-| `SECRET_KEY` | Django secret key | — |
+| `SECRET_KEY` | Django secret key (required) | — |
+| `ALLOWED_HOSTS` | Comma-separated hostnames Django will serve | `localhost,127.0.0.1` |
+| `DATABASE_URL` | Full DB URL — takes precedence over `DB_*` vars; injected automatically by Railway | — |
 | `DB_NAME` | PostgreSQL database name | `postgres` |
 | `DB_USER` | PostgreSQL username | `postgres` |
 | `DB_PASSWORD` | PostgreSQL password | — |
@@ -415,9 +437,9 @@ Shared infrastructure in `frontend/src/test/`:
 |---|---|
 | `setup.js` | Imports `@testing-library/jest-dom` matchers and manages MSW server lifecycle |
 | `server.js` | MSW Node server instance shared across all test files |
-| `handlers.js` | Default API stubs for all routes (stats, colors, tags, lists) |
-| `fixtures.js` | Shared mock data (`mockColors`, `mockTags`, `mockStats`) |
-| `utils.jsx` | `renderWithProviders(ui, { route })` — wraps with `QueryClientProvider` and `MemoryRouter` |
+| `handlers.js` | Default API stubs for all routes (auth, stats, colors, tags, lists) |
+| `fixtures.js` | Shared mock data (`mockUser`, `mockColors`, `mockTags`, `mockStats`) |
+| `utils.jsx` | `renderWithProviders(ui, { route })` — wraps with `QueryClientProvider`, `MemoryRouter`, and a pre-seeded `AuthContext` (authenticated by default) |
 
 ### Coverage
 
@@ -471,6 +493,27 @@ npm run lint
 
 ---
 
+## Authentication
+
+Umbra uses Django's session-based authentication. The React SPA communicates with three dedicated endpoints:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/login/` | Accepts `{ username, password }`. Opens a session and issues a `csrftoken` cookie. Throttled to 5 requests/min per IP. |
+| `POST` | `/api/auth/logout/` | Ends the current session. Accepts unauthenticated requests so an expired-session logout does not 403. |
+| `GET` | `/api/auth/me/` | Returns `{ id, username }` for the active session; 403 if unauthenticated. |
+
+### How it works
+
+1. On app load, `AuthProvider` calls `GET /api/auth/me/` to check the existing session.
+2. While the check is in flight, `ProtectedRoute` renders a spinner rather than redirecting.
+3. If no session exists, the user is redirected to `/login`.
+4. After a successful login, `AuthProvider` stores `{ id, username }` in React state and navigates to `/`.
+5. All mutating API calls go through `api/client.js`, which reads the `csrftoken` cookie and attaches it as `X-CSRFToken`. Any `403` response triggers a hard redirect to `/login`.
+6. All data (lists, items, tags, colors) is filtered server-side to the authenticated user — cross-user access is rejected at the serializer queryset level.
+
+---
+
 ## API Reference
 
 All endpoints are under `/api/`. The Django admin interface is available at `/admin/`.
@@ -481,6 +524,18 @@ All endpoints are under `/api/`. The Django admin interface is available at `/ad
 - **Write** requests accept IDs: `color_id`, `tag_ids`
 
 ### Endpoints
+
+All endpoints except the auth trio below require an active session (`IsAuthenticated`). Results are always scoped to the authenticated user.
+
+#### Authentication
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/login/` | Open a session (`{ username, password }`) |
+| `POST` | `/api/auth/logout/` | End the current session |
+| `GET` | `/api/auth/me/` | Return `{ id, username }` for the active session |
+
+#### Resources
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -506,15 +561,18 @@ EFBase (abstract)
 └── created_date, updated_date
 
 Color
-├── name        (unique, max 32 chars)
-└── hex_code    (unique, validated #RGB or #RRGGBB)
+├── owner    ──FK──> User (CASCADE)
+├── name        (unique per user, max 32 chars)
+└── hex_code    (unique per user, validated #RGB or #RRGGBB)
 
 Tag
-├── name        (unique, max 32 chars)
+├── owner    ──FK──> User (CASCADE)
+├── name        (unique per user, max 32 chars)
 └── color  ──FK──> Color (PROTECT)
 
 TodoList
-├── name        (unique, max 32 chars)
+├── owner    ──FK──> User (CASCADE)
+├── name        (unique per user, max 32 chars)
 ├── description (optional, max 256 chars)
 └── color  ──FK──> Color (PROTECT)
 
@@ -537,15 +595,42 @@ TodoItemTag  (M2M through table)
 
 ---
 
-## Production Build
+## Deployment
 
-Build the React frontend for production:
+### Local production build
 
 ```bash
-make build
-# Output: frontend/dist/
+make build          # Compiles the React SPA → frontend/dist/
+uv run python manage.py collectstatic --noinput
 ```
 
-The compiled static files in `frontend/dist/` can be served by Django's `staticfiles` or any static file host (e.g. S3, Nginx). The Django API is a standard WSGI/ASGI app — deploy with Gunicorn/Uvicorn behind Nginx or any compatible platform.
+WhiteNoise serves both the SPA (`frontend/dist/`) and Django admin assets (`staticfiles/`) in production. In development neither directory is required — `runserver` and the Vite dev server handle static files directly.
 
-Set `DEBUG=False` and configure `SECRET_KEY`, `ALLOWED_HOSTS`, and database credentials via environment variables in production.
+### Railway
+
+The project is configured for one-command deployment to [Railway](https://railway.app) via `railway.toml` and `nixpacks.toml`.
+
+#### First-time setup
+
+1. Create a new Railway project and add a service from your GitHub repository.
+2. Add a **PostgreSQL** plugin to the same project — Railway injects `DATABASE_URL` into the service automatically.
+3. Set the following environment variables on the web service:
+
+   | Variable | Value |
+   |---|---|
+   | `SECRET_KEY` | A long random string |
+   | `ALLOWED_HOSTS` | Your Railway domain (e.g. `umbra-production.up.railway.app`) |
+   | `DEBUG` | `False` |
+
+4. Deploy. Railway picks up `railway.toml` and `nixpacks.toml` automatically.
+
+#### What happens on each deploy
+
+| Phase | Action |
+|---|---|
+| **Setup** | nixpacks installs Python 3 (for bootstrapping), Node.js 22, and gcc |
+| **Install** | Installs latest `uv`, downloads Python 3.14.4 via `uv python install`, syncs backend deps with `uv sync --no-dev --frozen` |
+| **Build** | Builds the React SPA (`npm ci && npm run build`), then runs `collectstatic` |
+| **Start** | Runs `migrate` (idempotent), then starts Gunicorn on `$PORT` with 2 workers |
+
+The health check polls `GET /health/` with a 30-second timeout. If the service fails to start, Railway restarts it automatically (`restartPolicyType = "on_failure"`).
