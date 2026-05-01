@@ -98,6 +98,20 @@ def user(db) -> User:
 
 
 @pytest.fixture
+def other_user(db) -> User:
+    """A second, independent user for cross-user isolation tests."""
+    return User.objects.create_user(username="otheruser", password="otherpass456")
+
+
+@pytest.fixture
+def other_api_client(other_user: User) -> APIClient:
+    """APIClient force-authenticated as other_user."""
+    client = APIClient()
+    client.force_authenticate(user=other_user)
+    return client
+
+
+@pytest.fixture
 def api_client(user: User) -> APIClient:
     """APIClient force-authenticated as the default test user.
 

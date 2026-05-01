@@ -170,12 +170,14 @@ class TodoItemViewSet(viewsets.ModelViewSet):
     serializer_class = TodoItemSerializer
 
     def get_queryset(self) -> QuerySet[TodoItem]:
-        """Return items belonging to the parent list, provided it is owned by the user."""
+        """Return items belonging to the parent list, provided it is owned by the user.
+
+        Raises Http404 if the parent list does not exist or is not owned by
+        the requesting user, so callers cannot probe for foreign list PKs.
+        """
+        get_object_or_404(TodoList, pk=self.kwargs["list_pk"], owner=self.request.user)
         return (
-            TodoItem.objects.filter(
-                list_id=self.kwargs["list_pk"],
-                list__owner=self.request.user,
-            )
+            TodoItem.objects.filter(list_id=self.kwargs["list_pk"])
             .select_related("list")
             .prefetch_related("tags__color")
             .order_by("priority")
@@ -216,6 +218,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path="reorder")  # type: ignore[untyped-decorator]
     def reorder(self, request: Request, list_pk: int | None = None) -> Response:
         """Reassign priority values atomically based on the supplied ID order."""
+        get_object_or_404(TodoList, pk=list_pk, owner=request.user)
         order = request.data.get("order", [])
         if not isinstance(order, list) or not all(isinstance(i, int) for i in order):
             raise drf_serializers.ValidationError(
