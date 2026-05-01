@@ -180,7 +180,9 @@ def test_stats_overdue(api_client: APIClient, user: User) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_completed_excluded_from_due_counts(api_client: APIClient, user: User) -> None:
+def test_stats_completed_excluded_from_due_counts(
+    api_client: APIClient, user: User
+) -> None:
     """Completed items are not counted in overdue or due-this-week totals."""
     now = timezone.now()
     color = make_color(user)
@@ -250,7 +252,9 @@ def test_stats_importance_breakdown(api_client: APIClient, user: User) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_top_lists_ordered_by_item_count(api_client: APIClient, user: User) -> None:
+def test_stats_top_lists_ordered_by_item_count(
+    api_client: APIClient, user: User
+) -> None:
     """top_lists is sorted descending by item_count."""
     color = make_color(user)
     small = make_list(user, "Small", color)

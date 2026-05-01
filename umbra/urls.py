@@ -18,5 +18,7 @@ urlpatterns = [
     # Catch-all: serve the React SPA's index.html for every route that isn't
     # handled above. React Router then takes over client-side navigation.
     # This must be last so it doesn't shadow the API or admin routes.
-    re_path(r"^(?!api/|admin/|health/).*$", TemplateView.as_view(template_name="index.html")),
+    re_path(
+        r"^(?!api/|admin/|health/).*$", TemplateView.as_view(template_name="index.html")
+    ),
 ]

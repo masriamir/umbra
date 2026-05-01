@@ -31,9 +31,7 @@ class ColorSerializer(serializers.ModelSerializer):
     def validate_name(self, value: str) -> str:
         """Reject duplicate names within the same user's palette."""
         if self._user_color_qs().filter(name=value).exists():
-            raise serializers.ValidationError(
-                "A color with this name already exists."
-            )
+            raise serializers.ValidationError("A color with this name already exists.")
         return value
 
     def validate_hex_code(self, value: str) -> str:

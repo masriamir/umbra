@@ -50,9 +50,7 @@ _whitenoise = (
     # WhiteNoise must come directly after SecurityMiddleware so it can serve
     # static files and the React SPA before any other middleware runs.
     # Not needed in development — Django's runserver handles static files.
-    ["whitenoise.middleware.WhiteNoiseMiddleware"]
-    if not DEBUG
-    else []
+    ["whitenoise.middleware.WhiteNoiseMiddleware"] if not DEBUG else []
 )
 
 MIDDLEWARE = [

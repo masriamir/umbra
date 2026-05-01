@@ -27,7 +27,9 @@ def auth_user(db, credentials: dict[str, str]) -> User:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_login_success(anon_client: APIClient, auth_user: User, credentials: dict[str, str]) -> None:
+def test_login_success(
+    anon_client: APIClient, auth_user: User, credentials: dict[str, str]
+) -> None:
     response = anon_client.post(LOGIN_URL, credentials, format="json")
     assert response.status_code == 200
     data = response.json()

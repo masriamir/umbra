@@ -75,9 +75,7 @@ def test_color_delete_returns_404_for_other_user(
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_tag_list_hidden_from_other_user(
-    other_api_client: APIClient, tag: Tag
-) -> None:
+def test_tag_list_hidden_from_other_user(other_api_client: APIClient, tag: Tag) -> None:
     response = other_api_client.get("/api/tags/")
     assert response.status_code == 200
     assert response.json()["results"] == []
