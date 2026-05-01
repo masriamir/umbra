@@ -26,28 +26,29 @@ from todo.serializers import (
 
 @api_view(["GET"])  # type: ignore[untyped-decorator]
 def stats(request: Request) -> Response:
-    """Return aggregate statistics across lists, items, tags, and colors.
+    """Return aggregate statistics scoped to the authenticated user.
 
     Returns:
         Response containing totals, due/overdue counts, importance breakdown,
         and top lists/tags by item usage.
     """
+    user = request.user
     now = timezone.now()
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     week_end = today_start + timedelta(days=7)
 
-    total_items = TodoItem.objects.count()
-    completed_items = TodoItem.objects.filter(completed=True).count()
+    user_items = TodoItem.objects.filter(list__owner=user)
+    total_items = user_items.count()
+    completed_items = user_items.filter(completed=True).count()
 
     importance_breakdown = {
-        label.lower(): TodoItem.objects.filter(
-            completed=False, importance=value
-        ).count()
+        label.lower(): user_items.filter(completed=False, importance=value).count()
         for value, label in Importance.choices
     }
 
     top_lists = list(
-        TodoList.objects.annotate(
+        TodoList.objects.filter(owner=user)
+        .annotate(
             item_count=Count("items"),
             completed_count=Count("items", filter=Q(items__completed=True)),
         )
@@ -56,7 +57,8 @@ def stats(request: Request) -> Response:
     )
 
     top_tags = list(
-        Tag.objects.annotate(usage_count=Count("todoitemtag"))
+        Tag.objects.filter(owner=user)
+        .annotate(usage_count=Count("todoitemtag"))
         .values("id", "name", "usage_count")
         .order_by("-usage_count")[:10]
     )
@@ -64,23 +66,23 @@ def stats(request: Request) -> Response:
     return Response(
         {
             "totals": {
-                "lists": TodoList.objects.count(),
+                "lists": TodoList.objects.filter(owner=user).count(),
                 "items": total_items,
                 "completed_items": completed_items,
                 "active_items": total_items - completed_items,
-                "colors": Color.objects.count(),
-                "tags": Tag.objects.count(),
+                "colors": Color.objects.filter(owner=user).count(),
+                "tags": Tag.objects.filter(owner=user).count(),
             },
-            "items_due_this_week": TodoItem.objects.filter(
+            "items_due_this_week": user_items.filter(
                 completed=False,
                 due_date__gte=today_start,
                 due_date__lt=week_end,
             ).count(),
-            "overdue_items": TodoItem.objects.filter(
+            "overdue_items": user_items.filter(
                 completed=False,
                 due_date__lt=today_start,
             ).count(),
-            "items_without_due_date": TodoItem.objects.filter(
+            "items_without_due_date": user_items.filter(
                 completed=False,
                 due_date__isnull=True,
             ).count(),
@@ -92,10 +94,17 @@ def stats(request: Request) -> Response:
 
 
 class ColorViewSet(viewsets.ModelViewSet):
-    """CRUD endpoints for Color resources."""
+    """CRUD endpoints for Color resources, scoped to the authenticated user."""
 
-    queryset = Color.objects.all()
     serializer_class = ColorSerializer
+
+    def get_queryset(self) -> QuerySet[Color]:
+        """Return only colors owned by the requesting user."""
+        return Color.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer: drf_serializers.BaseSerializer) -> None:
+        """Save a new color, assigning the requesting user as owner."""
+        serializer.save(owner=self.request.user)
 
     def destroy(self, request: Request, *args: object, **kwargs: object) -> Response:
         """Delete a color, returning 400 if it is still referenced by a list or tag."""
@@ -111,17 +120,31 @@ class ColorViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
-    """CRUD endpoints for Tag resources."""
+    """CRUD endpoints for Tag resources, scoped to the authenticated user."""
 
-    queryset = Tag.objects.select_related("color").all()
     serializer_class = TagSerializer
+
+    def get_queryset(self) -> QuerySet[Tag]:
+        """Return only tags owned by the requesting user."""
+        return Tag.objects.select_related("color").filter(owner=self.request.user)
+
+    def perform_create(self, serializer: drf_serializers.BaseSerializer) -> None:
+        """Save a new tag, assigning the requesting user as owner."""
+        serializer.save(owner=self.request.user)
 
 
 class TodoListViewSet(viewsets.ModelViewSet):
-    """CRUD endpoints for TodoList resources, including ICS calendar export."""
+    """CRUD endpoints for TodoList resources, scoped to the authenticated user."""
 
-    queryset = TodoList.objects.select_related("color").all()
     serializer_class = TodoListSerializer
+
+    def get_queryset(self) -> QuerySet[TodoList]:
+        """Return only lists owned by the requesting user."""
+        return TodoList.objects.select_related("color").filter(owner=self.request.user)
+
+    def perform_create(self, serializer: drf_serializers.BaseSerializer) -> None:
+        """Save a new list, assigning the requesting user as owner."""
+        serializer.save(owner=self.request.user)
 
     @action(detail=True, methods=["get"], url_path="export")  # type: ignore[untyped-decorator]
     def export(self, request: Request, pk: int | None = None) -> HttpResponse:
@@ -142,22 +165,27 @@ class TodoListViewSet(viewsets.ModelViewSet):
 
 
 class TodoItemViewSet(viewsets.ModelViewSet):
-    """CRUD endpoints for TodoItem resources, scoped to a parent list."""
+    """CRUD endpoints for TodoItem resources, scoped to a parent list owned by the user."""
 
     serializer_class = TodoItemSerializer
 
     def get_queryset(self) -> QuerySet[TodoItem]:
-        """Return items belonging to the parent list, ordered by priority."""
+        """Return items belonging to the parent list, provided it is owned by the user."""
         return (
-            TodoItem.objects.filter(list_id=self.kwargs["list_pk"])
+            TodoItem.objects.filter(
+                list_id=self.kwargs["list_pk"],
+                list__owner=self.request.user,
+            )
             .select_related("list")
             .prefetch_related("tags__color")
             .order_by("priority")
         )
 
     def perform_create(self, serializer: drf_serializers.BaseSerializer) -> None:
-        """Save a new item, assigning the parent list and auto-incrementing priority."""
-        todo_list = get_object_or_404(TodoList, pk=self.kwargs["list_pk"])
+        """Save a new item, verifying list ownership and auto-incrementing priority."""
+        todo_list = get_object_or_404(
+            TodoList, pk=self.kwargs["list_pk"], owner=self.request.user
+        )
         current_max = TodoItem.objects.filter(list=todo_list).aggregate(
             max_priority=models.Max("priority")
         )["max_priority"]
@@ -194,7 +222,11 @@ class TodoItemViewSet(viewsets.ModelViewSet):
                 {"order": "Must be a list of integer IDs."}
             )
 
-        items = list(TodoItem.objects.filter(list_id=list_pk, pk__in=order))
+        items = list(
+            TodoItem.objects.filter(
+                list_id=list_pk, list__owner=request.user, pk__in=order
+            )
+        )
         if len(items) != len(order):
             raise drf_serializers.ValidationError(
                 {"order": "Some IDs are invalid or do not belong to this list."}

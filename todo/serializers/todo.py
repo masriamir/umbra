@@ -14,12 +14,14 @@ class TodoListSerializer(serializers.ModelSerializer):
     """Serializer for the TodoList model.
 
     Accepts ``color_id`` on write and returns the nested color object on read.
+    The ``color_id`` queryset is restricted to colors owned by the requesting
+    user so that cross-user color references are rejected at validation time.
     """
 
     color = ColorSerializer(read_only=True)
     color_id = serializers.PrimaryKeyRelatedField(
         source="color",
-        queryset=Color.objects.all(),
+        queryset=Color.objects.none(),
         write_only=True,
     )
 
@@ -36,18 +38,41 @@ class TodoListSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["created_date", "updated_date"]
 
+    def get_fields(self) -> dict:
+        """Scope color_id to the requesting user's colors."""
+        fields = super().get_fields()
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            fields["color_id"].queryset = Color.objects.filter(owner=request.user)
+        return fields
+
+    def validate_name(self, value: str) -> str:
+        """Reject duplicate list names within the same user's lists."""
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            qs = TodoList.objects.filter(owner=request.user, name=value)
+            if self.instance:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise serializers.ValidationError(
+                    "A list with this name already exists."
+                )
+        return value
+
 
 class TodoItemSerializer(serializers.ModelSerializer):
     """Serializer for the TodoItem model.
 
     Accepts ``tag_ids`` on write and returns nested tag objects on read.
+    The ``tag_ids`` queryset is restricted to tags owned by the requesting user
+    so that cross-user tag references are rejected at validation time.
     """
 
     tags = TagSerializer(many=True, read_only=True)
     tag_ids = serializers.PrimaryKeyRelatedField(
         source="tags",
         many=True,
-        queryset=Tag.objects.all(),
+        queryset=Tag.objects.none(),
         write_only=True,
         required=False,
     )
@@ -77,6 +102,16 @@ class TodoItemSerializer(serializers.ModelSerializer):
             "created_date",
             "updated_date",
         ]
+
+    def get_fields(self) -> dict:
+        """Scope tag_ids to the requesting user's tags."""
+        fields = super().get_fields()
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            fields["tag_ids"].child_relation.queryset = Tag.objects.filter(
+                owner=request.user
+            )
+        return fields
 
     def run_validators(self, value: dict[str, Any]) -> None:
         """Inject instance fields required by UniqueForDateValidator before validation.

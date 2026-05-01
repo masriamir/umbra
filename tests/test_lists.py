@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from todo.models import Color, TodoList
@@ -135,8 +136,8 @@ def test_list_update_description(api_client: APIClient, todo_list: TodoList) -> 
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_list_delete(api_client: APIClient, color: Color) -> None:
-    lst = TodoList.objects.create(name="Temporary", color=color)
+def test_list_delete(api_client: APIClient, color: Color, user: User) -> None:
+    lst = TodoList.objects.create(name="Temporary", color=color, owner=user)
     response = api_client.delete(list_url(lst.pk))
     assert response.status_code == 204
     assert not TodoList.objects.filter(pk=lst.pk).exists()

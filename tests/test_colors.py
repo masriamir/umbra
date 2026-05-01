@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from todo.models import Color, Tag
@@ -135,8 +136,8 @@ def test_color_update(api_client: APIClient, color: Color) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_color_delete(api_client: APIClient) -> None:
-    c = Color.objects.create(name="Temporary", hex_code="#CCCCCC")
+def test_color_delete(api_client: APIClient, user: User) -> None:
+    c = Color.objects.create(name="Temporary", hex_code="#CCCCCC", owner=user)
     response = api_client.delete(color_url(c.pk))
     assert response.status_code == 204
     assert not Color.objects.filter(pk=c.pk).exists()

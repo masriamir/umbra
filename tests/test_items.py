@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from todo.models import Color, Importance, Tag, TodoItem, TodoList
@@ -48,10 +49,10 @@ def test_item_list_returns_existing(api_client: APIClient, todo_item: TodoItem) 
 @pytest.mark.api
 @pytest.mark.django_db
 def test_item_list_scoped_to_list(
-    api_client: APIClient, color: Color, todo_item: TodoItem
+    api_client: APIClient, color: Color, todo_item: TodoItem, user: User
 ) -> None:
     """Items from a different list must not appear."""
-    other_list = TodoList.objects.create(name="Other List", color=color)
+    other_list = TodoList.objects.create(name="Other List", color=color, owner=user)
     TodoItem.objects.create(title="Other Item", list=other_list)
 
     response = api_client.get(items_url(todo_item.list.pk))

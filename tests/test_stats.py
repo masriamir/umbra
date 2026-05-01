@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -16,12 +17,12 @@ STATS_URL = "/api/stats/"
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 
-def make_color(name: str = "c", hex_code: str = "#AABBCC") -> Color:
-    return Color.objects.create(name=name, hex_code=hex_code)
+def make_color(owner: User, name: str = "c", hex_code: str = "#AABBCC") -> Color:
+    return Color.objects.create(name=name, hex_code=hex_code, owner=owner)
 
 
-def make_list(name: str, color: Color) -> TodoList:
-    return TodoList.objects.create(name=name, color=color)
+def make_list(owner: User, name: str, color: Color) -> TodoList:
+    return TodoList.objects.create(name=name, color=color, owner=owner)
 
 
 def make_item(
@@ -88,13 +89,13 @@ def test_stats_empty_db(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_totals(api_client: APIClient) -> None:
+def test_stats_totals(api_client: APIClient, user: User) -> None:
     """Totals correctly reflect the number of each resource in the database."""
-    c1 = make_color("Red", "#FF0000")
-    c2 = make_color("Blue", "#0000FF")
-    tag1 = Tag.objects.create(name="t1", color=c1)
-    Tag.objects.create(name="t2", color=c2)
-    lst = make_list("List A", c1)
+    c1 = make_color(user, "Red", "#FF0000")
+    c2 = make_color(user, "Blue", "#0000FF")
+    tag1 = Tag.objects.create(name="t1", color=c1, owner=user)
+    Tag.objects.create(name="t2", color=c2, owner=user)
+    lst = make_list(user, "List A", c1)
     make_item("Item 1", lst)
     make_item("Item 2", lst)
     make_item("Item 3", lst, completed=True)
@@ -143,11 +144,11 @@ def test_stats_response_shape(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_due_this_week(api_client: APIClient) -> None:
+def test_stats_due_this_week(api_client: APIClient, user: User) -> None:
     """Items with a due_date within the next 7 days are counted."""
     now = timezone.now()
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
     make_item("Due tomorrow", lst, due_date=now + timedelta(days=1))
     make_item("Due in 6 days", lst, due_date=now + timedelta(days=6))
@@ -161,11 +162,11 @@ def test_stats_due_this_week(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_overdue(api_client: APIClient) -> None:
+def test_stats_overdue(api_client: APIClient, user: User) -> None:
     """Incomplete items with a due_date in the past are counted as overdue."""
     now = timezone.now()
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
     make_item("Overdue 1", lst, due_date=now - timedelta(days=1))
     make_item("Overdue 2", lst, due_date=now - timedelta(days=10))
@@ -179,11 +180,11 @@ def test_stats_overdue(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_completed_excluded_from_due_counts(api_client: APIClient) -> None:
+def test_stats_completed_excluded_from_due_counts(api_client: APIClient, user: User) -> None:
     """Completed items are not counted in overdue or due-this-week totals."""
     now = timezone.now()
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
     # These would be overdue/due-this-week if incomplete, but they're completed.
     make_item("Done overdue", lst, due_date=now - timedelta(days=2), completed=True)
@@ -200,11 +201,11 @@ def test_stats_completed_excluded_from_due_counts(api_client: APIClient) -> None
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_items_without_due_date(api_client: APIClient) -> None:
+def test_stats_items_without_due_date(api_client: APIClient, user: User) -> None:
     """Only active items without a due_date are counted."""
     now = timezone.now()
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
     make_item("No date active", lst)
     make_item("No date active 2", lst)
@@ -221,10 +222,10 @@ def test_stats_items_without_due_date(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_importance_breakdown(api_client: APIClient) -> None:
+def test_stats_importance_breakdown(api_client: APIClient, user: User) -> None:
     """Importance breakdown counts only active items for each level."""
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
     make_item("High 1", lst, importance=Importance.HIGH)
     make_item("High 2", lst, importance=Importance.HIGH)
@@ -249,11 +250,11 @@ def test_stats_importance_breakdown(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_top_lists_ordered_by_item_count(api_client: APIClient) -> None:
+def test_stats_top_lists_ordered_by_item_count(api_client: APIClient, user: User) -> None:
     """top_lists is sorted descending by item_count."""
-    color = make_color()
-    small = make_list("Small", color)
-    large = make_list("Large", color)
+    color = make_color(user)
+    small = make_list(user, "Small", color)
+    large = make_list(user, "Large", color)
 
     make_item("A", large)
     make_item("B", large)
@@ -273,10 +274,10 @@ def test_stats_top_lists_ordered_by_item_count(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_top_lists_completed_count(api_client: APIClient) -> None:
+def test_stats_top_lists_completed_count(api_client: APIClient, user: User) -> None:
     """top_lists entry includes the correct completed_count for each list."""
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
     make_item("Active", lst)
     make_item("Done 1", lst, completed=True)
@@ -307,13 +308,13 @@ def test_stats_top_lists_shape(api_client: APIClient, todo_list: TodoList) -> No
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_top_tags_ordered_by_usage(api_client: APIClient) -> None:
+def test_stats_top_tags_ordered_by_usage(api_client: APIClient, user: User) -> None:
     """top_tags is sorted descending by usage_count."""
-    color = make_color()
-    lst = make_list("L", color)
+    color = make_color(user)
+    lst = make_list(user, "L", color)
 
-    tag_rare = Tag.objects.create(name="rare", color=color)
-    tag_common = Tag.objects.create(name="common", color=color)
+    tag_rare = Tag.objects.create(name="rare", color=color, owner=user)
+    tag_common = Tag.objects.create(name="common", color=color, owner=user)
 
     item1 = make_item("Item 1", lst)
     item2 = make_item("Item 2", lst)
@@ -337,10 +338,10 @@ def test_stats_top_tags_ordered_by_usage(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_top_tags_unused_tag_included(api_client: APIClient) -> None:
+def test_stats_top_tags_unused_tag_included(api_client: APIClient, user: User) -> None:
     """Tags with zero usage still appear in top_tags with usage_count 0."""
-    color = make_color()
-    tag = Tag.objects.create(name="unused", color=color)
+    color = make_color(user)
+    tag = Tag.objects.create(name="unused", color=color, owner=user)
 
     data = api_client.get(STATS_URL).json()
     top = data["top_tags"]
@@ -353,10 +354,10 @@ def test_stats_top_tags_unused_tag_included(api_client: APIClient) -> None:
 @pytest.mark.integration
 @pytest.mark.api
 @pytest.mark.django_db
-def test_stats_top_tags_shape(api_client: APIClient) -> None:
+def test_stats_top_tags_shape(api_client: APIClient, user: User) -> None:
     """Each entry in top_tags has the expected keys."""
-    color = make_color()
-    Tag.objects.create(name="t", color=color)
+    color = make_color(user)
+    Tag.objects.create(name="t", color=color, owner=user)
 
     data = api_client.get(STATS_URL).json()
     entry = data["top_tags"][0]

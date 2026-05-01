@@ -116,18 +116,18 @@ def anon_client() -> APIClient:
 
 
 @pytest.fixture
-def color(db) -> Color:
-    return Color.objects.create(name="Test Red", hex_code="#FF0000")
+def color(db, user: User) -> Color:
+    return Color.objects.create(name="Test Red", hex_code="#FF0000", owner=user)
 
 
 @pytest.fixture
-def tag(db, color: Color) -> Tag:
-    return Tag.objects.create(name="urgent", color=color)
+def tag(db, user: User, color: Color) -> Tag:
+    return Tag.objects.create(name="urgent", color=color, owner=user)
 
 
 @pytest.fixture
-def todo_list(db, color: Color) -> TodoList:
-    return TodoList.objects.create(name="Test List", color=color)
+def todo_list(db, user: User, color: Color) -> TodoList:
+    return TodoList.objects.create(name="Test List", color=color, owner=user)
 
 
 @pytest.fixture
