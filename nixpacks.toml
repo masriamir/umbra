@@ -8,7 +8,5 @@ nixPkgs = ["nodejs_22"]
 # old for Python 3.14 and the required-version field). Install the latest uv,
 # then use it to download Python 3.14 via its managed installer before syncing.
 cmds = [
-    "pip install uv",
-    "uv python install",
     "uv sync --no-dev --frozen",
 ]
