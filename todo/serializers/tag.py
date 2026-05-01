@@ -1,5 +1,7 @@
 """Serializer for the Tag model."""
 
+from typing import Any
+
 from rest_framework import serializers
 
 from todo.models import Color, Tag
@@ -33,9 +35,9 @@ class TagSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["created_date", "updated_date"]
 
-    def get_fields(self) -> dict:
+    def get_fields(self) -> dict[str, Any]:
         """Scope color_id to the requesting user's colors."""
-        fields = super().get_fields()
+        fields: dict[str, Any] = super().get_fields()
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             fields["color_id"].queryset = Color.objects.filter(owner=request.user)

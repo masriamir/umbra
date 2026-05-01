@@ -24,7 +24,7 @@ from todo.serializers import (
 )
 
 
-@api_view(["GET"])  # type: ignore[untyped-decorator]
+@api_view(["GET"])
 def stats(request: Request) -> Response:
     """Return aggregate statistics scoped to the authenticated user.
 
@@ -146,7 +146,7 @@ class TodoListViewSet(viewsets.ModelViewSet):
         """Save a new list, assigning the requesting user as owner."""
         serializer.save(owner=self.request.user)
 
-    @action(detail=True, methods=["get"], url_path="export")  # type: ignore[untyped-decorator]
+    @action(detail=True, methods=["get"], url_path="export")
     def export(self, request: Request, pk: int | None = None) -> HttpResponse:
         """Export all incomplete, dated items in the list as an ICS calendar file."""
         todo_list = self.get_object()
@@ -194,7 +194,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
         next_priority = 0 if current_max is None else current_max + 1
         serializer.save(list=todo_list, priority=next_priority)
 
-    @action(detail=True, methods=["get"], url_path="export")  # type: ignore[untyped-decorator]
+    @action(detail=True, methods=["get"], url_path="export")
     def export(
         self, request: Request, list_pk: int | None = None, pk: int | None = None
     ) -> HttpResponse:
@@ -215,7 +215,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 
-    @action(detail=False, methods=["post"], url_path="reorder")  # type: ignore[untyped-decorator]
+    @action(detail=False, methods=["post"], url_path="reorder")
     def reorder(self, request: Request, list_pk: int | None = None) -> Response:
         """Reassign priority values atomically based on the supplied ID order."""
         get_object_or_404(TodoList, pk=list_pk, owner=request.user)

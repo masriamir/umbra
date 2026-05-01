@@ -1,5 +1,6 @@
 """Serializer for the Color model."""
 
+from django.db.models import QuerySet
 from rest_framework import serializers
 
 from todo.models import Color
@@ -19,7 +20,7 @@ class ColorSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["created_date", "updated_date"]
 
-    def _user_color_qs(self) -> serializers.QuerySet[Color]:  # type: ignore[name-defined]
+    def _user_color_qs(self) -> QuerySet[Color]:
         request = self.context.get("request")
         if not (request and request.user.is_authenticated):
             return Color.objects.none()

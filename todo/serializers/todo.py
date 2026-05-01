@@ -38,9 +38,9 @@ class TodoListSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["created_date", "updated_date"]
 
-    def get_fields(self) -> dict:
+    def get_fields(self) -> dict[str, Any]:
         """Scope color_id to the requesting user's colors."""
-        fields = super().get_fields()
+        fields: dict[str, Any] = super().get_fields()
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             fields["color_id"].queryset = Color.objects.filter(owner=request.user)
@@ -103,9 +103,9 @@ class TodoItemSerializer(serializers.ModelSerializer):
             "updated_date",
         ]
 
-    def get_fields(self) -> dict:
+    def get_fields(self) -> dict[str, Any]:
         """Scope tag_ids to the requesting user's tags."""
-        fields = super().get_fields()
+        fields: dict[str, Any] = super().get_fields()
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             fields["tag_ids"].child_relation.queryset = Tag.objects.filter(
