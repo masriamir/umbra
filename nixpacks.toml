@@ -1,12 +1,7 @@
 [phases.setup]
-# nodejs_22 is not auto-detected by nixpacks because this is primarily a
-# Python project; it is required to build the React SPA in the build phase.
-nixPkgs = ["nodejs_22"]
-
-[phases.install]
-# Override nixpacks' auto-generated install step, which pins uv==0.4.30 (too
-# old for Python 3.14 and the required-version field). Install the latest uv,
-# then use it to download Python 3.14 via its managed installer before syncing.
-cmds = [
-    "uv sync --no-dev --frozen",
-]
+# nodejs_22: not auto-detected by nixpacks because this is primarily a Python
+# project, but required to build the React SPA in the build phase.
+# uv: must be present before nixpacks' auto-generated install step runs
+# (`uv sync --no-dev --frozen`). uv will auto-download Python 3.14 via
+# python-build-standalone when syncing (python-downloads = "automatic").
+nixPkgs = ["nodejs_22", "uv"]
