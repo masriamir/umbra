@@ -3,7 +3,7 @@ builder = "nixpacks"
 # Build the React SPA, then collect Django static files. Both outputs are
 # required before the server starts: WhiteNoise serves the SPA from
 # frontend/dist/ and Django admin assets from staticfiles/.
-buildCommand = "cd frontend && npm ci && npm run build && cd .. && uv run python manage.py collectstatic --noinput"
+buildCommand = "cd frontend && npm install && npm run build && cd .. && uv run python manage.py collectstatic --noinput"
 
 [deploy]
 # Run migrations on every deploy (idempotent), then start gunicorn.
