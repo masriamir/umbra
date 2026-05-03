@@ -173,9 +173,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    # With SECURE_PROXY_SSL_HEADER set, Django treats proxied requests as HTTPS,
-    # so SECURE_SSL_REDIRECT is a safe no-op for traffic from Railway's edge.
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = False
     CSRF_COOKIE_SECURE = True
     # Keep False so the SPA can read the csrftoken cookie via JS and attach
     # the X-CSRFToken header on mutating requests.
