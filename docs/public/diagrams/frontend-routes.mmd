@@ -1,0 +1,23 @@
+---
+title: Umbra Application Pages
+---
+flowchart TD
+  ENTRY["Application Entry Point\nBoots React and the client-side router"]
+  APP["App Shell\nManages the dark and light theme preference\nPersists the choice between sessions"]
+  AUTH["Authentication State\nRestores your session automatically when you return to the app\nProvides your identity to every page and component"]
+  NAV["Navigation Bar\nAlways visible: links to all sections, theme toggle, and sign-out"]
+  ROUTER["Page Router\nSelects which page to show based on the current URL"]
+
+  LGN["/login — Sign-In Page\nEnter your credentials to access the app\nRedirects to the dashboard once signed in"]
+  GUARD["Route Guard\nEvery page below this point requires authentication\nUnauthenticated visitors are redirected to sign-in\nShows a loading indicator while session is being verified"]
+
+  DASH["/ — Dashboard\nYour activity at a glance:\nTotal tasks and completion rate\nOverdue items and due this week\nPriority breakdown and your most-used lists and tags"]
+  LP["/lists — My Lists\nSee all your todo lists in a card grid\nCreate new lists with a name, description, and color\nRename, recolor, or delete existing lists"]
+  LD["/lists/:id — List Detail\nOpen a specific list to work with its tasks\nAdd new tasks or edit existing ones\nComplete tasks with one click · drag to reorder\nExport individual tasks as calendar (.ics) files"]
+  TP["/tags — Tags\nManage the tag labels used to categorise tasks\nCreate tags with custom names and colors\nEdit or remove tags at any time"]
+  CP["/colors — Colors\nManage your personal color palette\nCreate named colors using any hex code\nColors are shared across all lists and tags in your account"]
+
+  ENTRY --> APP --> AUTH
+  AUTH --> NAV & ROUTER
+  ROUTER --> LGN & GUARD
+  GUARD --> DASH & LP & LD & TP & CP

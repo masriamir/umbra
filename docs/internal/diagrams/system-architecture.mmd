@@ -1,0 +1,42 @@
+---
+title: Umbra System Architecture (Internal)
+---
+flowchart TB
+  BROWSER["Browser\nReact SPA + React Router\nAuthContext · localStorage theme"]
+
+  subgraph RAILWAY["Railway Platform (Production)"]
+    subgraph BUILD["Build Phase - Nixpacks"]
+      B1["npm ci + npm run build\n→ frontend/dist/"]
+      B2["uv run collectstatic\n→ staticfiles/"]
+      B1 --> B2
+    end
+
+    subgraph SERVE["Runtime"]
+      WN["WhiteNoise Middleware\nfrontend/dist → SPA · staticfiles → admin\nProduction only — not loaded in dev"]
+      GUN["Gunicorn :PORT\n2 workers · timeout 30s"]
+      DJ["Django Middleware Stack\nSecurity · Session · CSRF\nThrottle: anon 20/min · user 300/min · login 5/min"]
+      WN --> GUN --> DJ
+    end
+
+    subgraph URLS["URL Dispatch"]
+      U1["/api/ → DRF\nColorViewSet · TagViewSet · TodoListViewSet\nTodoItemViewSet · stats\nauth/login · auth/logout · auth/me"]
+      U2["/admin/ → Django Admin"]
+      U3["/health/ → HTTP 200 text/plain"]
+      U4["/* catch-all → TemplateView index.html\nReact Router handles client-side nav"]
+    end
+
+    BUILD -.->|"build artifacts used at boot"| SERVE
+    DJ --> U1 & U2 & U3 & U4
+  end
+
+  PG[("PostgreSQL\nRailway Plugin\nDATABASE_URL auto-injected")]
+
+  BROWSER -->|"HTTPS · GET / + static assets"| WN
+  BROWSER -->|"HTTPS · /api/*\nCookie: sessionid\nHeader: X-CSRFToken"| GUN
+  U1 & U2 --> PG
+
+  subgraph DEV["Dev Environment - localhost"]
+    VITE["Vite :5173\nHMR · proxy /api/* → :8000\nCORS: localhost:5173"]
+    DJRUN["Django runserver :8000\nno WhiteNoise · CORS enabled\nSQLite or local PostgreSQL"]
+    VITE -.->|"proxy /api/*"| DJRUN
+  end

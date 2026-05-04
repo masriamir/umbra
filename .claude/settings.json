@@ -13,6 +13,19 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/docs-sync-check.sh",
+            "timeout": 10,
+            "statusMessage": "Checking docs sync..."
+          }
+        ]
+      }
     ]
   }
 }

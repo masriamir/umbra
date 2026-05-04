@@ -1,0 +1,51 @@
+---
+title: Umbra Authentication Flow
+---
+sequenceDiagram
+  participant B as Web Browser
+  participant S as Umbra Server
+  participant DB as Database
+
+  rect rgb(200, 220, 255)
+    Note over B,DB: Signing In
+    B->>S: Submit username and password to /api/auth/login/
+    Note right of S: Rate-limited to 5 attempts per minute to block brute-force attacks
+    S->>DB: Check credentials against stored (hashed) password
+    DB-->>S: User account found or not found
+    alt Credentials are correct
+      S->>S: Create a session record in the database
+      S->>S: Generate a CSRF token
+      S-->>B: Success response + two cookies set by the browser automatically
+      Note left of B: sessionid cookie (HttpOnly)
+      Note left of B: Proves your identity on every request
+      Note left of B: Cannot be read by JavaScript for security
+      Note left of B: csrftoken cookie (readable by JS)
+      Note left of B: App reads this value and sends it as a header
+      Note left of B: Prevents cross-site request forgery attacks
+    else Wrong username or password
+      S-->>B: 401 Unauthorized
+    end
+  end
+
+  rect rgb(200, 255, 200)
+    Note over B,DB: Making an Authenticated Request
+    B->>S: API request + sessionid cookie + X-CSRFToken header
+    Note right of S: The server performs two security checks
+    Note right of S: 1. Looks up the session to identify the user
+    Note right of S: 2. Validates the CSRF token to confirm the request
+    Note right of S: came from your app, not a malicious third-party site
+    S->>DB: Look up session and fetch requested data
+    DB-->>S: Session valid, data returned
+    S-->>B: JSON response
+  end
+
+  rect rgb(255, 240, 200)
+    Note over B,DB: Signing Out
+    B->>S: POST /api/auth/logout/
+    Note right of S: Accepts the request even if the session has already expired
+    Note right of S: This prevents a confusing error when logging out of a stale session
+    S->>DB: Delete the session record from the database
+    S-->>B: 204 No Content (signed out successfully)
+    Note left of B: App clears the signed-in user state
+    Note left of B: and redirects to the login page
+  end

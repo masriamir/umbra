@@ -1,0 +1,42 @@
+---
+title: Umbra System Architecture
+---
+flowchart TB
+  BROWSER["Web Browser\nLoads the React app on first visit\nAll subsequent navigation is client-side via React Router"]
+
+  subgraph RAILWAY["Railway Cloud Platform"]
+    subgraph BUILD["Build Phase"]
+      B1["Compile React app to static files\nnpm run build → frontend/dist/"]
+      B2["Collect Django admin assets\nmanage.py collectstatic → staticfiles/"]
+      B1 --> B2
+    end
+
+    subgraph SERVE["Application Server"]
+      WN["Static File Server (WhiteNoise)\nServes the React SPA and Django admin assets\ndirectly from disk — no separate CDN required\nProduction only"]
+      GUN["Application Server (Gunicorn)\nRuns the Django application\n2 concurrent workers"]
+      DJ["Django Middleware\nSecurity headers · User sessions\nCSRF protection · API rate limiting"]
+      WN --> GUN --> DJ
+    end
+
+    subgraph URLS["Request Routing"]
+      U1["/api/ — REST API\nAll todo data: lists, items, tags, colors\nUser authentication and statistics"]
+      U2["/admin/ — Admin Panel\nDjango built-in staff interface"]
+      U3["/health/ — Health Check\nUsed by Railway to confirm the app is running"]
+      U4["All other paths — React App\nServes index.html; React Router handles the rest"]
+    end
+
+    BUILD -.->|"compiled assets available at runtime"| SERVE
+    DJ --> U1 & U2 & U3 & U4
+  end
+
+  PG[("PostgreSQL Database\nManaged by Railway\nConnection string injected automatically at deploy")]
+
+  BROWSER -->|"Loads app shell and static assets"| WN
+  BROWSER -->|"All API calls authenticated via\nsession cookie + CSRF token"| GUN
+  U1 & U2 --> PG
+
+  subgraph DEV["Local Development Environment"]
+    VITE["Vite Dev Server :5173\nLive reload + hot module replacement\nProxies all /api/* requests to Django"]
+    DJRUN["Django runserver :8000\nSame application code as production\nDebug mode enabled · CORS open to Vite"]
+    VITE -.->|"proxies /api/*"| DJRUN
+  end

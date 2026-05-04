@@ -1,0 +1,10 @@
+# CODEOWNERS
+#
+# Reviewers listed here are automatically added when a pull request touches
+# matching paths. At least one listed owner must approve before merging.
+#
+# Syntax: <pattern> <@github-user or @org/team>
+# Patterns are evaluated top-to-bottom; the last match wins.
+
+# Require explicit sign-off before anything in public-facing docs goes out.
+docs/public/ @masriamir

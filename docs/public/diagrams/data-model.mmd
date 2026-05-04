@@ -1,0 +1,73 @@
+---
+title: Umbra Data Model
+---
+erDiagram
+  User {
+    int id PK "Primary key, auto-assigned"
+    string username UK "Unique login name, max 150 characters"
+    string password "Securely hashed — never stored as plain text"
+    string email "Optional contact address"
+    bool is_active "Whether the account can log in"
+    bool is_staff "Grants access to the admin panel"
+    datetime date_joined "When the account was first created"
+  }
+
+  Color {
+    int id PK "Primary key"
+    string name "Display name for the color, unique per user"
+    string hex_code "Hex color code like #FF5733, validated on save"
+    int owner_id FK "User who created and owns this color"
+    datetime created_date "Set automatically when the record is created"
+    datetime updated_date "Updated automatically on every save"
+  }
+
+  Tag {
+    int id PK "Primary key"
+    string name "Label text shown on tag badges, unique per user"
+    int color_id FK "Color used to visually identify this tag"
+    int owner_id FK "User who created and owns this tag"
+    datetime created_date "Set automatically when the record is created"
+    datetime updated_date "Updated automatically on every save"
+  }
+
+  TodoList {
+    int id PK "Primary key"
+    string name "List title, unique per user, max 32 characters"
+    string description "Optional longer description, max 256 characters"
+    int color_id FK "Color used to visually distinguish this list"
+    int owner_id FK "User who created and owns this list"
+    datetime created_date "Set automatically when the record is created"
+    datetime updated_date "Updated automatically on every save"
+  }
+
+  TodoItem {
+    int id PK "Primary key"
+    int list_id FK "The list this task belongs to"
+    string title "Task title, max 64 characters"
+    string description "Optional additional detail, max 256 characters"
+    datetime due_date "Optional deadline — used for overdue calculations and calendar export"
+    int duration_minutes "Optional estimated duration — defaults to 30 min in calendar export"
+    bool completed "Whether the task has been completed"
+    bool synced "Tracks whether the task has been exported to a calendar file"
+    int priority "Manual sort order within its list — updated by drag-and-drop reordering"
+    int importance "Task priority: None=0, High=1, Medium=5, Low=9 (iCalendar RFC 5545 PRIORITY)"
+    datetime created_date "Set automatically when the record is created"
+    datetime updated_date "Updated automatically on every save"
+  }
+
+  TodoItemTag {
+    int id PK "Join table — links tasks to tags (many-to-many)"
+    int todo_item_id FK "The task being tagged"
+    int tag_id FK "The tag being applied to the task"
+    datetime created_date "Set automatically when the tag is applied"
+    datetime updated_date "Updated automatically on every save"
+  }
+
+  User ||--o{ Color : "creates and owns"
+  User ||--o{ Tag : "creates and owns"
+  User ||--o{ TodoList : "creates and owns"
+  Color ||--o{ Tag : "provides color for"
+  Color ||--o{ TodoList : "provides color for"
+  TodoList ||--o{ TodoItem : "contains"
+  TodoItem ||--o{ TodoItemTag : "tagged through"
+  Tag ||--o{ TodoItemTag : "applied through"

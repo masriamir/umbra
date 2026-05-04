@@ -13,6 +13,16 @@ help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-22s\033[0m %s\n", $$1, $$2}'
 
+# ── Git hooks ─────────────────────────────────────────────────────────────────
+
+.PHONY: install-hooks
+install-hooks: ## Install git pre-commit hooks (credential check + docs sync warning)
+	@mkdir -p .git/hooks
+	@printf '#!/usr/bin/env bash\n.claude/hooks/pre-commit-check.sh || exit $$?\n.claude/hooks/git-pre-commit-docs.sh\n' \
+		> .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "Git hooks installed → .git/hooks/pre-commit"
+
 # ── Dependencies ───────────────────────────────────────────────────────────────
 
 .PHONY: install

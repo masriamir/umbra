@@ -1,0 +1,75 @@
+---
+title: Umbra Data Model (Internal)
+---
+erDiagram
+  User {
+    int id PK
+    string username UK "max_length=150"
+    string password "PBKDF2 hashed, never stored plaintext"
+    string email
+    bool is_active
+    bool is_staff
+    bool is_superuser
+    datetime last_login
+    datetime date_joined
+  }
+
+  Color {
+    int id PK
+    string name "max_length=32, unique per owner"
+    string hex_code "max_length=7, validated format #RRGGBB"
+    int owner_id FK
+    datetime created_date "auto_now_add=True"
+    datetime updated_date "auto_now=True"
+  }
+
+  Tag {
+    int id PK
+    string name "max_length=32, unique per owner"
+    int color_id FK
+    int owner_id FK
+    datetime created_date "auto_now_add=True"
+    datetime updated_date "auto_now=True"
+  }
+
+  TodoList {
+    int id PK
+    string name "max_length=32, unique per owner"
+    string description "max_length=256, blank=True default empty"
+    int color_id FK
+    int owner_id FK
+    datetime created_date "auto_now_add=True"
+    datetime updated_date "auto_now=True"
+  }
+
+  TodoItem {
+    int id PK
+    int list_id FK
+    string title "max_length=64, unique_for_date=created_date"
+    string description "max_length=256, blank=True default empty"
+    datetime due_date "null=True blank=True"
+    int duration_minutes "null=True, falls back to 30 in ICS export"
+    bool completed "default=False"
+    bool synced "default=False, tracks ICS calendar export state"
+    int priority "PositiveIntegerField, manual drag-and-drop sort order"
+    int importance "0=None 1=High 5=Medium 9=Low (RFC 5545 PRIORITY values)"
+    datetime created_date "auto_now_add=True"
+    datetime updated_date "auto_now=True"
+  }
+
+  TodoItemTag {
+    int id PK
+    int todo_item_id FK
+    int tag_id FK
+    datetime created_date "auto_now_add=True"
+    datetime updated_date "auto_now=True"
+  }
+
+  User ||--o{ Color : "owns"
+  User ||--o{ Tag : "owns"
+  User ||--o{ TodoList : "owns"
+  Color ||--o{ Tag : "styles"
+  Color ||--o{ TodoList : "styles"
+  TodoList ||--o{ TodoItem : "contains"
+  TodoItem ||--o{ TodoItemTag : "M2M through"
+  Tag ||--o{ TodoItemTag : "M2M through"

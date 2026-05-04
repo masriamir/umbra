@@ -25,6 +25,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Security:** Run `/security-audit` (or `/security-audit backend|frontend|deps`) to trigger a full AI-powered security review. A `PreToolUse` hook on `git commit` automatically blocks commits that stage `.env` files or obvious hardcoded credentials — see `.claude/hooks/pre-commit-check.sh`.
 
+**Documentation (`docs/`):** Architecture diagrams, runbooks, ADRs, and API references live in `docs/`. The directory is split by audience:
+- `docs/internal/` — developer-facing material (technical diagrams, runbooks, Architecture Decision Records). Never requires a public-safe review.
+- `docs/public/` — safe to publish. Protected by `CODEOWNERS`: any PR touching this subtree requires `@masriamir` approval before merge.
+
+Sub-categories within each audience directory:
+- `diagrams/` — Mermaid (`.mmd`) architecture and data model diagrams
+- `runbooks/` — operational procedures (deploy, rollback, DB migrations)
+- `decisions/` — Architecture Decision Records (ADRs, internal only)
+- `api/` — public API reference (public only)
+- `guides/` — user-facing guides (public only)
+
+**Docs file naming:** All filenames use `kebab-case` (no spaces, no underscores, no camelCase). No version suffixes — use git history instead.
+
+**ADR format:** Decision records in `docs/internal/decisions/` are numbered and named `NNNN-slug.md` (e.g. `0001-session-auth-over-jwt.md`), zero-padded to four digits. Records are immutable once merged — superseded ones are marked with a `Superseded by` status rather than deleted. Each ADR has three sections: **Context** (what prompted the decision), **Decision** (what was chosen), **Consequences** (tradeoffs).
+
+**When to write an ADR:** Write one when a decision meets any of these criteria: (1) it affects more than one layer of the stack, (2) it rules out alternatives that would seem reasonable to a future contributor, or (3) it carries non-obvious tradeoffs that aren't apparent from reading the code. Bug fixes, routine feature additions, and style choices do not qualify.
+
+**ADR behaviour:** During any discussion of architecture or technology choices, proactively suggest drafting an ADR. At implementation time, if the change meets the criteria above, create the ADR in `docs/internal/decisions/` with status `Accepted` before marking the task complete. Use status `Proposed` if the decision is still being discussed.
+
+**Docs sync — required diagram updates:** After editing any of the files below, update the corresponding diagrams before finishing the task. A `PostToolUse` hook (`docs-sync-check.sh`) will also remind you automatically.
+
+| File(s) changed | Diagrams to update |
+|---|---|
+| `todo/models/*` | `data-model.mmd` (both internal + public) |
+| `todo/urls.py`, `umbra/urls.py` | `system-architecture.mmd`; also `frontend-routes.mmd` if a new top-level route was added |
+| `todo/views.py`, `todo/auth_views.py` | `system-architecture.mmd`; also `auth-flow.mmd` if auth logic changed |
+| `todo/serializers/*` | `data-model.mmd`; consider `docs/public/api/` if the public contract changed |
+| `frontend/src/App.jsx`, `frontend/src/main.jsx` | All four frontend diagrams (`frontend-routes.mmd` + `frontend-component-tree.mmd`) |
+| `frontend/src/pages/*` | `frontend-routes.mmd` + `frontend-component-tree.mmd` (both internal + public) |
+| `frontend/src/components/*`, `frontend/src/hooks/*`, `frontend/src/context/*` | `frontend-component-tree.mmd` (both internal + public) |
+| `railway.toml`, `nixpacks.toml`, `umbra/settings.py` | `system-architecture.mmd`; consider an ADR if this is a significant architectural choice |
+
 Detailed rules are organized in `.claude/rules/`:
 - `commands.md` — Makefile targets and direct CLI commands
 - `environment.md` — Prerequisites, `.env` variables, dev server wiring

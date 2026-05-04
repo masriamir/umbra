@@ -1,0 +1,49 @@
+---
+title: Umbra Auth and Session Flow (Internal)
+---
+sequenceDiagram
+  participant B as Browser (React SPA)
+  participant DJ as Django + DRF
+  participant DB as PostgreSQL
+
+  rect rgb(200, 220, 255)
+    Note over B,DB: Login
+    B->>DJ: POST /api/auth/login/ {username, password}
+    Note right of DJ: @permission_classes([AllowAny])
+    Note right of DJ: LoginRateThrottle: 5/min
+    DJ->>DB: authenticate(username, password)
+    DB-->>DJ: User object or None
+    alt credentials valid
+      DJ->>DJ: login(request, user) — creates row in django_session table
+      DJ->>DJ: get_token(request) — issues csrftoken
+      DJ-->>B: 200 {id, username} + Set-Cookie: sessionid=X; csrftoken=Y
+      Note left of B: SPA reads csrftoken from cookie (not HttpOnly)
+      Note left of B: sessionid is HttpOnly — cannot be read by JS
+    else invalid credentials
+      DJ-->>B: 401 {detail: Invalid credentials}
+    end
+  end
+
+  rect rgb(200, 255, 200)
+    Note over B,DB: Authenticated API Request (e.g. PATCH item)
+    B->>DJ: PATCH /api/lists/1/items/5/ + Cookie: sessionid=X + Header: X-CSRFToken: Y
+    Note right of DJ: SessionAuthentication.authenticate()
+    Note right of DJ: Step 1: resolve user from sessionid cookie
+    Note right of DJ: Step 2: validate X-CSRFToken == csrftoken cookie (mutating methods only)
+    Note right of DJ: UserRateThrottle: 300/min
+    DJ->>DB: SELECT django_session WHERE session_key=X
+    DB-->>DJ: Session valid — user resolved
+    DJ->>DB: TodoItem.objects.get(pk=5, list__owner=user)
+    DB-->>DJ: TodoItem instance
+    DJ-->>B: 200 {id, title, completed, priority, ...}
+  end
+
+  rect rgb(255, 240, 200)
+    Note over B,DB: Logout
+    B->>DJ: POST /api/auth/logout/ + Cookie: sessionid=X
+    Note right of DJ: @permission_classes([AllowAny])
+    Note right of DJ: Works even if session already expired (no 403)
+    DJ->>DJ: logout(request) — deletes session row from django_session
+    DJ-->>B: 204 No Content
+    Note left of B: SPA sets AuthContext.user = null, navigate to /login
+  end

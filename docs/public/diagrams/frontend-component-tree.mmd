@@ -1,0 +1,61 @@
+---
+title: Umbra Frontend Component Tree
+---
+flowchart TD
+  MAIN["Application Entry Point\nmain.jsx\nBoots React and wires up the router"]
+  APP["Root Shell\nApp.jsx\nManages dark and light theme preference\nPersists choice in browser storage"]
+  AUTHP["Authentication Provider\nTracks the signed-in user across the whole app\nRestores session on page refresh\nProvides login and logout actions to all child components"]
+  HDR["Navigation Bar\nHeader\nLinks to every section · theme toggle · sign-out button"]
+  RTR["Page Router\nMaps URL paths to page components\nHandles all client-side navigation"]
+
+  LGN["Sign-In Page\n/login\nUsername and password form\nRedirects to dashboard on success"]
+  PR["Route Guard\nProtectedRoute\nBlocks access to all pages unless signed in\nShows a loading spinner while checking session\nSends unauthenticated users to the sign-in page"]
+
+  DASH["Dashboard\n/\nAggregated overview of your todo activity:\ntotal items, overdue count, importance breakdown,\nmost active lists and tags"]
+  LISTSPAGE["Lists Page\n/lists\nBrowse all your todo lists\nCreate, rename, recolor, and delete lists"]
+  LISTDET["List Detail Page\n/lists/:id\nView and manage all items in a single list\nCreate, edit, reorder, complete, and export tasks"]
+  TAGSPAGE["Tags Page\n/tags\nCreate and manage tag labels with colors\nUsed to categorise tasks across all lists"]
+  COLSPAGE["Colors Page\n/colors\nManage the shared color palette\nNamed colors are used by lists and tags throughout the app"]
+
+  LG["Lists Grid\nResponsive card grid showing all lists"]
+  LC["List Card\nShows list name, description, item count, and color swatch\nEdit and delete buttons"]
+  LF["List Form\nCreate or update a list\nEnter a name, description, and choose a color\nDisplayed inside a modal overlay"]
+
+  IL["Item List\nDraggable list of tasks\nSupports live drag-and-drop reordering\nChanges are saved automatically on drop"]
+  IR["Item Row\nA single task in the list\nClick the title to edit it inline\nShows due date, importance, and applied tags"]
+  ICHK["Completion Checkbox\nCircular checkbox\nMarks a task complete or incomplete with one click"]
+  DH["Drag Handle\nGrip icon on each row\nDrag to manually reorder tasks within the list"]
+  IFM["Item Form\nCreate or update a task\nTitle, description, due date, estimated duration,\npriority importance level, and tag selection\nDisplayed inside a modal overlay"]
+
+  BADGE["Tag Badge\nSmall coloured chip showing a tag name\nColour comes from the tag's assigned Color"]
+  TSEL["Tag Selector\nMulti-select tag picker\nUsed inside the item form to assign tags to a task"]
+  CSWATCH["Color Swatch\nSmall filled circle showing a hex color\nUsed in list cards, tag rows, and the color picker"]
+  CPICK["Color Picker\nScrollable grid of color swatches\nClick to select a color for a list or tag"]
+  MODAL["Modal Overlay\nFull-screen backdrop with centred content\nDismissed by pressing Escape or clicking outside"]
+  SPIN["Loading Spinner\nShown while data loads or session is being verified"]
+  ERR["Error Message\nDisplays a human-readable API or network error"]
+
+  MAIN --> APP --> AUTHP
+  AUTHP --> HDR & RTR
+  RTR --> LGN & PR
+  PR --> DASH & LISTSPAGE & LISTDET & TAGSPAGE & COLSPAGE
+
+  LISTSPAGE --> LG & LF
+  LG --> LC
+  LC --> CSWATCH
+  LF --> CPICK & MODAL
+
+  LISTDET --> IL & IFM
+  IL --> IR
+  IR --> ICHK & DH & BADGE
+  IFM --> TSEL & MODAL
+
+  TAGSPAGE --> BADGE & TSEL & CPICK & MODAL
+  COLSPAGE --> CSWATCH & CPICK & MODAL
+
+  AUTHP -.-> SPIN
+  PR -.-> SPIN
+  LISTSPAGE -.-> ERR
+  LISTDET -.-> ERR
+  TAGSPAGE -.-> ERR
+  COLSPAGE -.-> ERR

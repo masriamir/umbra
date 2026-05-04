@@ -4,6 +4,17 @@
 
 A `Makefile` is provided at the repo root. Run `make help` to list all targets.
 
+## Setup (after cloning)
+
+```bash
+make install            # Install backend + frontend dependencies
+make install-hooks      # Install git pre-commit hooks (credential check + docs sync warning)
+```
+
+Run `make install-hooks` once per clone. It writes `.git/hooks/pre-commit` which runs:
+1. `pre-commit-check.sh` — blocks commits containing `.env` files or hardcoded credentials (hard block, exit 2)
+2. `git-pre-commit-docs.sh` — warns when architecture-relevant files are staged without docs changes (soft warning, exit 0)
+
 ## Dependencies
 
 ```bash

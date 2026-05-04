@@ -1,0 +1,61 @@
+---
+title: Umbra Frontend Component Tree (Internal)
+---
+flowchart TD
+  MAIN["main.jsx\nReact.StrictMode + BrowserRouter"]
+  APP["App.jsx\nState: darkMode via useState + localStorage\nToggles document.documentElement.classList dark"]
+  AUTHP["AuthProvider\nContext: user, loading\nActions: login() POST auth/login · logout() POST auth/logout\nGET auth/me on mount to restore session"]
+  HDR["Header\nNav links · dark mode toggle · logout button\nReads AuthContext.user"]
+  RTR["React Router Routes"]
+
+  LGN["LoginPage\nControlled form: username + password\nCalls AuthContext.login() → navigates to /"]
+  PR["ProtectedRoute\nReads AuthContext.user + loading\nShows Spinner while loading\nRedirects to /login if unauthenticated"]
+
+  DASH["DashboardPage\nhook: useStats()\nGET /api/stats/\nDisplays: totals · overdue · importance breakdown\ntop 10 lists · top 10 tags"]
+  LISTSPAGE["ListsPage\nhook: useLists()\nGET/POST /api/lists/\nPATCH/DELETE /api/lists/:id/"]
+  LISTDET["ListDetailPage\nhooks: useLists() useItems() useTags()\nGET /api/lists/:id/items/\nPOST/PATCH/DELETE /api/lists/:id/items/:id/\nPOST /api/lists/:id/items/reorder/\nGET /api/lists/:id/items/:id/export/ → .ics download"]
+  TAGSPAGE["TagsPage\nhooks: useTags() useColors()\nGET/POST/PATCH/DELETE /api/tags/"]
+  COLSPAGE["ColorsPage\nhook: useColors()\nGET/POST/PATCH/DELETE /api/colors/"]
+
+  LG["ListsGrid\nResponsive CSS grid of ListCards"]
+  LC["ListCard\nName · description · item count\nColorSwatch · edit + delete actions"]
+  LF["ListForm\nCreate or edit list: name, description, ColorPicker\nWrapped in Modal"]
+
+  IL["ItemList\ndnd-kit SortableContext + PointerSensor\nOptimistic UI reorder + POST reorder/ on drop"]
+  IR["ItemRow\nInline title edit on click\nShows: title · due date · importance badge · tags"]
+  ICHK["ItemCheckbox\nCircular checkbox\nPATCH completed=true/false on toggle"]
+  DH["DragHandle\nGrip icon · triggers PointerSensor drag"]
+  IFM["ItemForm\nCreate or edit: title · description · due_date\nduration_minutes · importance (enum) · TagSelector\nWrapped in Modal"]
+
+  BADGE["TagBadge\nColored chip: hex background + name label"]
+  TSEL["TagSelector\nMulti-select checkboxes filtered by owner\nUsed in ItemForm"]
+  CSWATCH["ColorSwatch\nCircle rendered from Color.hex_code\nUsed in ListCard · TagsPage · ColorPicker"]
+  CPICK["ColorPicker\nGrid of ColorSwatches\nOnClick selects color_id for list or tag form"]
+  MODAL["Modal\nReact portal to document.body\nCloses on Escape key or backdrop click"]
+  SPIN["Spinner\nShown during auth check and data fetches"]
+  ERR["ErrorMessage\nDisplays API error strings from hook state"]
+
+  MAIN --> APP --> AUTHP
+  AUTHP --> HDR & RTR
+  RTR --> LGN & PR
+  PR --> DASH & LISTSPAGE & LISTDET & TAGSPAGE & COLSPAGE
+
+  LISTSPAGE --> LG & LF
+  LG --> LC
+  LC --> CSWATCH
+  LF --> CPICK & MODAL
+
+  LISTDET --> IL & IFM
+  IL --> IR
+  IR --> ICHK & DH & BADGE
+  IFM --> TSEL & MODAL
+
+  TAGSPAGE --> BADGE & TSEL & CPICK & MODAL
+  COLSPAGE --> CSWATCH & CPICK & MODAL
+
+  AUTHP -.-> SPIN
+  PR -.-> SPIN
+  LISTSPAGE -.-> ERR
+  LISTDET -.-> ERR
+  TAGSPAGE -.-> ERR
+  COLSPAGE -.-> ERR

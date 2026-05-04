@@ -1,0 +1,23 @@
+---
+title: Umbra Frontend Routes (Internal)
+---
+flowchart TD
+  MAIN["main.jsx\nStrictMode + BrowserRouter"]
+  APP["App.jsx\ndarkMode: useState + localStorage"]
+  AUTHP["AuthProvider\nState: user | null, loading: bool\nGET /api/auth/me on mount"]
+  HDR["Header\nRead-only: AuthContext.user"]
+  RTR["React Router Routes"]
+
+  LGN["/login\nLoginPage\nPOST /api/auth/login/\nNavigates to / on success"]
+  PR["ProtectedRoute\nAuthContext.user == null + !loading → redirect /login\nloading == true → Spinner"]
+
+  DASH["/ → DashboardPage\nGET /api/stats/\nDisplays: total, completed, overdue, due_this_week\nimportance breakdown, top_lists, top_tags"]
+  LP["/lists → ListsPage\nGET /api/lists/\nPOST /api/lists/ (create)\nPATCH /api/lists/:id/ (update)\nDELETE /api/lists/:id/ (delete)"]
+  LD["/lists/:id → ListDetailPage\nGET /api/lists/:id/ (list details)\nGET /api/lists/:id/items/ (all items)\nPOST /api/lists/:id/items/ (create)\nPATCH /api/lists/:id/items/:id/ (update)\nDELETE /api/lists/:id/items/:id/ (delete)\nPOST /api/lists/:id/items/reorder/ (bulk reorder)\nGET /api/lists/:id/items/:id/export/ (ICS download)"]
+  TP["/tags → TagsPage\nGET /api/tags/ · GET /api/colors/\nPOST /api/tags/ · PATCH /api/tags/:id/\nDELETE /api/tags/:id/"]
+  CP["/colors → ColorsPage\nGET /api/colors/\nPOST /api/colors/ · PATCH /api/colors/:id/\nDELETE /api/colors/:id/"]
+
+  MAIN --> APP --> AUTHP
+  AUTHP --> HDR & RTR
+  RTR --> LGN & PR
+  PR --> DASH & LP & LD & TP & CP
