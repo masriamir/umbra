@@ -8,3 +8,6 @@
 
 # Require explicit sign-off before anything in public-facing docs goes out.
 docs/public/ @masriamir
+
+# Security policy is public-facing — require approval before any changes merge.
+.github/SECURITY.md @masriamir

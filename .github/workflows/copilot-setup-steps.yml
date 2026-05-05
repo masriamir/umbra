@@ -1,0 +1,43 @@
+name: Copilot Environment Setup
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["copilot/**"]
+
+jobs:
+  # This job name is required exactly as-is for the Copilot coding agent to discover it.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: .python-version
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+
+      - name: Install Python dependencies
+        run: uv sync --all-groups
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend

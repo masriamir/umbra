@@ -1,0 +1,21 @@
+name: "CodeQL config for umbra"
+
+# Paths to include in analysis
+paths:
+  - todo
+  - umbra
+  - frontend/src
+
+# Paths to exclude from analysis
+paths-ignore:
+  - todo/migrations
+  - tests
+  - frontend/src/test
+  - frontend/dist
+  - "**/*.test.jsx"
+  - "**/test_*.py"
+
+# Query filters
+query-filters:
+  - exclude:
+      id: py/unused-import  # May produce false positives with Django's dynamic import patterns

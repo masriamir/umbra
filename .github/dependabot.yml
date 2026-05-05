@@ -1,0 +1,124 @@
+version: 2
+updates:
+  # Python dependencies via uv
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "07:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependabot"
+    commit-message:
+      prefix: "dependabot"
+      prefix-development: "dependabot"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "masriamir"
+    assignees:
+      - "masriamir"
+    groups:
+      django-dependencies:
+        patterns:
+          - "django*"
+          - "djangorestframework*"
+          - "django-*"
+          - "whitenoise*"
+          - "gunicorn*"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-dependencies:
+        patterns:
+          - "ruff*"
+          - "mypy*"
+          - "bandit*"
+          - "pre-commit*"
+        update-types:
+          - "minor"
+          - "patch"
+      test-dependencies:
+        patterns:
+          - "pytest*"
+          - "httpx*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Frontend dependencies via npm
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "07:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependabot"
+    commit-message:
+      prefix: "dependabot"
+      prefix-development: "dependabot"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "masriamir"
+    assignees:
+      - "masriamir"
+    groups:
+      react-dependencies:
+        patterns:
+          - "react*"
+          - "@types/react*"
+          - "react-dom*"
+          - "react-router*"
+        update-types:
+          - "minor"
+          - "patch"
+      test-dependencies:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "@testing-library/*"
+          - "msw*"
+          - "jsdom*"
+        update-types:
+          - "minor"
+          - "patch"
+      build-tools:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "eslint*"
+          - "tailwindcss*"
+          - "postcss*"
+          - "autoprefixer*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "07:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependabot"
+    commit-message:
+      prefix: "dependabot"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "masriamir"
+    assignees:
+      - "masriamir"

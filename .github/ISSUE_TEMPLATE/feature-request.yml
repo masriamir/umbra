@@ -1,0 +1,62 @@
+name: Feature Request
+description: Propose a new feature or enhancement for Umbra.
+title: "[Feature]: "
+labels:
+  - enhancement
+assignees:
+  - masriamir
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an improvement. Please describe the problem you're trying to solve and your proposed solution.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem does this solve? What is the motivation or use case?
+      placeholder: I'm trying to do X but currently there's no way to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+      description: Describe your preferred solution as clearly as possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other approaches did you consider, and why did you rule them out?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the application does this relate to?
+      options:
+        - Backend / API
+        - Frontend / UI
+        - Database / data model
+        - Authentication
+        - Deployment / infrastructure
+        - Developer experience
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Mockups, references, related issues, or any other context.
+    validations:
+      required: false

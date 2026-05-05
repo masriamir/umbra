@@ -1,0 +1,86 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in Umbra.
+title: "[Bug]: "
+labels:
+  - bug
+assignees:
+  - masriamir
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug. Please fill in as much detail as possible to help us investigate quickly.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the bug.
+      placeholder: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reliably reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include error messages, stack traces, or screenshots.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the application is affected?
+      options:
+        - Backend / API
+        - Frontend / UI
+        - Database / migrations
+        - Authentication
+        - Deployment / infrastructure
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Relevant environment details.
+      placeholder: |
+        - OS: macOS 15.4 / Ubuntu 24.04
+        - Python: 3.14.4
+        - Node.js: 22.x
+        - Browser: Chrome 130
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Any other context, logs, or screenshots that might be helpful.
+    validations:
+      required: false
