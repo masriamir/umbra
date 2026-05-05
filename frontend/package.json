@@ -24,6 +24,10 @@
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.1"
   },
+  "optionalDependencies": {
+    "@emnapi/core": "^1.7.1",
+    "@emnapi/runtime": "^1.7.1"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.9.1",
