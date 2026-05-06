@@ -44,6 +44,10 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // AuthContext is intentionally co-exported alongside AuthProvider so
+      // consumers that need the raw context (e.g. test utilities) can import it
+      // directly without going through the useAuth hook.
+      'react-refresh/only-export-components': ['error', { allowConstantExport: true, allowExportNames: ['AuthContext'] }],
     },
   },
 ])
