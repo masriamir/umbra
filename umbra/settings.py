@@ -157,7 +157,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Only activate when the build directory exists (not in a fresh dev checkout).
 _frontend_dist = BASE_DIR / "frontend" / "dist"
 if _frontend_dist.is_dir():
-    WHITENOISE_ROOT = _frontend_dist
+    WHITENOISE_ROOT = _frontend_dist  # lgtm[py/unused-global-variable]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
