@@ -114,6 +114,26 @@ test-frontend-watch: ## Re-run frontend tests on file changes
 test-frontend-cov: ## Run frontend tests with coverage report
 	cd frontend && npm run test:coverage
 
+# ── CI (local) ─────────────────────────────────────────────────────────────────
+
+.PHONY: ci-backend
+ci-backend: ## Run all backend CI steps locally (mirrors GitHub Actions — requires local PostgreSQL)
+	uv sync --all-groups
+	$(RUFF) check .
+	$(RUFF) format --check .
+	$(MYPY) .
+	DEBUG=False $(PYTHON) manage.py collectstatic --noinput
+	DEBUG=False $(PYTEST)
+
+.PHONY: ci-frontend
+ci-frontend: ## Run all frontend CI steps locally
+	npm ci --prefix frontend
+	npm run lint --prefix frontend
+	npm run test --prefix frontend
+
+.PHONY: ci
+ci: ci-backend ci-frontend ## Run all CI steps locally (mirrors GitHub Actions)
+
 # ── Code quality ───────────────────────────────────────────────────────────────
 
 .PHONY: lint
