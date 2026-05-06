@@ -2,7 +2,7 @@
  * @fileoverview Authentication context, provider, and hook for session-based auth.
  */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import * as authApi from "../api/auth";
@@ -68,14 +68,3 @@ export function AuthProvider({ children }) {
   );
 }
 
-/**
- * Returns the current authentication context.
- *
- * @throws {Error} If used outside of AuthProvider.
- * @returns {AuthContextValue}
- */
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
-}

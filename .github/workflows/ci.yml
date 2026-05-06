@@ -64,6 +64,9 @@ jobs:
       - name: Run type checking
         run: uv run mypy .
 
+      - name: Collect static files
+        run: uv run python manage.py collectstatic --noinput
+
       - name: Run tests
         run: uv run pytest
 
