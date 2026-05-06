@@ -27,14 +27,24 @@ def django_db_setup(
     # Update in-place to preserve Django's ensure_defaults values (e.g.
     # ATOMIC_REQUESTS, AUTOCOMMIT) while swapping the service-file-based
     # connection params for explicit env-var equivalents.
+    #
+    # When DATABASE_URL is present, settings.py already parsed the full
+    # connection URL into DATABASES["default"] — only apply the non-credential
+    # test settings. Otherwise, override with individual DB_* vars.
+    if not os.environ.get("DATABASE_URL"):
+        settings.DATABASES["default"].update(
+            {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": os.environ.get("DB_NAME", "postgres"),
+                "USER": os.environ.get("DB_USER", "postgres"),
+                "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+                "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+                "PORT": os.environ.get("DB_PORT", "5432"),
+            }
+        )
+
     settings.DATABASES["default"].update(
         {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DB_NAME", "postgres"),
-            "USER": os.environ.get("DB_USER", "postgres"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-            "PORT": os.environ.get("DB_PORT", "5432"),
             "ATOMIC_REQUESTS": False,
             "AUTOCOMMIT": True,
             "CONN_MAX_AGE": 0,

@@ -18,11 +18,15 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tailwindcss/postcss": "^4.2.2",
     "@tanstack/react-query": "^5.99.0",
-    "axios": "^1.15.0",
+    "axios": "^1.16.0",
     "react": "^19.2.5",
     "react-colorful": "^5.6.1",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.1"
+  },
+  "optionalDependencies": {
+    "@emnapi/core": "^1.7.1",
+    "@emnapi/runtime": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
