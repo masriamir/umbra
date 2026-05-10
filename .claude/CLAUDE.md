@@ -23,6 +23,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Testing:** Backend uses `pytest` with `@pytest.mark.integration` / `@pytest.mark.api` markers. Frontend uses **Vitest + React Testing Library + MSW** — test files are colocated as `*.test.jsx`, shared infrastructure is in `frontend/src/test/`.
 
+**Branching workflow:** This project follows GitHub Flow. Before starting any GitHub issue or new feature: (1) switch to `main` and pull the latest changes (`git pull --rebase`), (2) create and check out a new branch named `feature/###-short-description`, where `###` is the GitHub issue number. Never commit feature work directly to `main`. To keep an active feature branch up to date with `main`, use one of these strategies:
+- **Rebase the feature branch onto `main` (preferred for local or unshared branches):** use this to keep history linear before opening a PR or while you are the only person working on the branch. Example: `git fetch origin && git rebase origin/main`.
+- **Merge `main` into the feature branch (preferred once the branch is shared):** use this when collaborators may already be using the branch, or when you want to avoid rewriting published history. Example: `git fetch origin && git merge origin/main`.
+
+Prefer `git pull --rebase` over `git pull` when syncing a branch with its remote tracking branch.
+
+**GitHub issue linking:** When creating a PR or writing a commit message that completes a GitHub issue, include a closing keyword so GitHub auto-closes the issue on merge. Use `Closes #NNN`, `Fixes #NNN`, or `Resolves #NNN` (GitHub recognises all three and their past tense variants). Put the keyword in the PR body (preferred) or in the final commit message. Never use informal phrasing like "related to #NNN" when the intent is to close the issue.
+
 **Security:** Run `/security-audit` (or `/security-audit backend|frontend|deps`) to trigger a full AI-powered security review. A `PreToolUse` hook on `git commit` automatically blocks commits that stage `.env` files or obvious hardcoded credentials — see `.claude/hooks/pre-commit-check.sh`.
 
 **Documentation (`docs/`):** Architecture diagrams, runbooks, ADRs, and API references live in `docs/`. The directory is split by audience:
