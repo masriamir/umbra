@@ -29,7 +29,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Prefer `git pull --rebase` over `git pull` when syncing a branch with its remote tracking branch.
 
-**GitHub issue linking:** When creating a PR or writing a commit message that completes a GitHub issue, include a closing keyword so GitHub auto-closes the issue on merge. Use `Closes #NNN`, `Fixes #NNN`, or `Resolves #NNN` (GitHub recognises all three and their past tense variants). Put the keyword in the PR body (preferred) or in the final commit message. Never use informal phrasing like "related to #NNN" when the intent is to close the issue.
+**GitHub issue linking:** When creating a PR or writing a commit message that completes a GitHub issue, include a closing keyword so GitHub auto-closes the issue on merge. Use `Closes #NNN`, `Fixes #NNN`, or `Resolves #NNN` (GitHub recognises all three and their past tense variants). Put the keyword in the PR body (preferred) or in the final commit message. Never use informal phrasing like "related to #NNN" when the intent is to close the issue. A single PR can close multiple issues — add one closing keyword per issue it fully resolves:
+
+```
+Closes #27   # implementation sub-issue
+Closes #25   # parent tracking issue
+```
+
+Only add a closing keyword for an issue the PR genuinely completes. Do not close a parent or umbrella issue early — wait until the PR delivers its full scope.
+
+**GitHub sub-issues:** Use the sub-issues API to formally attach child issues to a parent (creates the hierarchical progress tracker visible in the GitHub UI):
+
+```bash
+gh api repos/masriamir/umbra/issues/{parent_number}/sub_issues \
+  --method POST \
+  --field sub_issue_id=$(gh api repos/masriamir/umbra/issues/{child_number} --jq '.id')
+```
+
+Repeat for each child. Closing keywords in PR bodies (above) handle auto-close on merge; the sub-issues API wires up the GitHub hierarchy independently of that.
+
+**Creating issues via CLI:** The YAML form templates in `.github/ISSUE_TEMPLATE/` only render in the GitHub web UI. When using `gh issue create`, mirror the template structure manually in the `--body` text. Available templates: `bug-report.yml` (fields: Description, Steps to reproduce, Expected behavior, Actual behavior, Area, Environment) and `feature-request.yml` (fields: Problem statement, Proposed solution, Alternatives considered, Area, Additional context).
 
 **Security:** Run `/security-audit` (or `/security-audit backend|frontend|deps`) to trigger a full AI-powered security review. A `PreToolUse` hook on `git commit` automatically blocks commits that stage `.env` files or obvious hardcoded credentials — see `.claude/hooks/pre-commit-check.sh`.
 
