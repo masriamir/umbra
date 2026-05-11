@@ -171,7 +171,7 @@ umbra/
 ├── mypy.ini                # Mypy configuration
 ├── pytest.toml             # Pytest configuration
 ├── railway.toml            # Railway deployment configuration
-├── nixpacks.toml           # Nixpacks build overrides (Node.js version, uv bootstrap)
+├── railpack.json           # Railpack config — declares Node.js 22 for the frontend build
 ├── .env.sample             # Environment variable template
 └── .python-version         # Pins Python 3.14.4
 ```
@@ -608,7 +608,7 @@ WhiteNoise serves both the SPA (`frontend/dist/`) and Django admin assets (`stat
 
 ### Railway
 
-The project is configured for one-command deployment to [Railway](https://railway.app) via `railway.toml` and `nixpacks.toml`.
+The project is configured for one-command deployment to [Railway](https://railway.app) via `railway.toml` and `railpack.json`.
 
 #### First-time setup
 
@@ -622,15 +622,15 @@ The project is configured for one-command deployment to [Railway](https://railwa
    | `ALLOWED_HOSTS` | Your Railway domain (e.g. `umbra-production.up.railway.app`) |
    | `DEBUG` | `False` |
 
-4. Deploy. Railway picks up `railway.toml` and `nixpacks.toml` automatically.
+4. Deploy. Railway picks up `railway.toml` and `railpack.json` automatically.
 
 #### What happens on each deploy
 
 | Phase | Action |
 |---|---|
-| **Setup** | nixpacks installs Python 3 (for bootstrapping), Node.js 22, and gcc |
-| **Install** | Installs latest `uv`, downloads Python 3.14.4 via `uv python install`, syncs backend deps with `uv sync --no-dev --frozen` |
-| **Build** | Builds the React SPA (`npm ci && npm run build`), then runs `collectstatic` |
+| **Setup** | Railpack detects Python (from `.python-version`) and uv; Node.js 22 is installed from `railpack.json` |
+| **Install** | `uv sync --no-dev --frozen` installs backend dependencies into the virtual environment |
+| **Build** | Builds the React SPA (`cd frontend && npm install && npm run build`), then runs `python manage.py collectstatic` |
 | **Start** | Runs `migrate` (idempotent), then starts Gunicorn on `$PORT` with 2 workers |
 
 The health check polls `GET /health/` with a 30-second timeout. If the service fails to start, Railway restarts it automatically (`restartPolicyType = "on_failure"`).

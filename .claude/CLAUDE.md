@@ -63,7 +63,7 @@ Sub-categories within each audience directory:
 | `frontend/src/App.jsx`, `frontend/src/main.jsx` | All four frontend diagrams (`frontend-routes.mmd` + `frontend-component-tree.mmd`) |
 | `frontend/src/pages/*` | `frontend-routes.mmd` + `frontend-component-tree.mmd` (both internal + public) |
 | `frontend/src/components/*`, `frontend/src/hooks/*`, `frontend/src/context/*` | `frontend-component-tree.mmd` (both internal + public) |
-| `railway.toml`, `nixpacks.toml`, `umbra/settings.py` | `system-architecture.mmd`; consider an ADR if this is a significant architectural choice |
+| `railway.toml`, `railpack.json`, `umbra/settings.py` | `system-architecture.mmd`; consider an ADR if this is a significant architectural choice |
 
 Detailed rules are organized in `.claude/rules/`:
 - `commands.md` — Makefile targets and direct CLI commands

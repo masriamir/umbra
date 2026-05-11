@@ -87,7 +87,7 @@ case "$FILE_PATH" in
     )
     NOTES+=("Add, remove, or relabel nodes to reflect the change.")
     ;;
-  */railway.toml|*/nixpacks.toml|*/umbra/settings.py|*/pyproject.toml)
+  */railway.toml|*/railpack.json|*/umbra/settings.py|*/pyproject.toml)
     DIAGRAMS+=(
       "docs/internal/diagrams/system-architecture.mmd"
       "docs/public/diagrams/system-architecture.mmd"

@@ -93,7 +93,7 @@ The following design choices are worth capturing as ADRs:
 
 - Session auth + CSRF over JWT (same-origin SPA, no token storage problem, Django native)
 - WhiteNoise over a CDN or separate static server (zero extra infrastructure, sufficient for this scale)
-- Railway for deployment (managed PostgreSQL plugin, nixpacks build, zero-config HTTPS)
+- Railway for deployment (managed PostgreSQL plugin, Railpack build, zero-config HTTPS)
 - DRF `SessionAuthentication` with `IsAuthenticated` default (all endpoints protected unless explicitly opted out)
 - Importance field mapped to RFC 5545 PRIORITY values (interop with iCalendar export)
 
