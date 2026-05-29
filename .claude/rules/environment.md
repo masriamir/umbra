@@ -35,7 +35,7 @@ Settings are loaded via `django-environ` from `.env`. In production (Railway), e
 
 `railway.toml` configures the Railway deployment:
 
-- **Build:** installs `uv`, syncs prod deps, builds the React SPA (`npm ci && npm run build`), then runs `collectstatic`.
+- **Build:** Railpack detects Python and uv natively; runs `cd frontend && npm install && npm run build`, then `uv run python manage.py collectstatic --noinput`.
 - **Start:** runs `migrate` (idempotent), then starts `gunicorn` on `$PORT` with 2 workers.
 - **Health check:** `GET /health/` with a 30-second timeout.
 - **Static files:** WhiteNoise serves both the React SPA (`frontend/dist/`) and Django admin assets (`staticfiles/`). In development WhiteNoise is not loaded — `runserver` handles static files directly.
