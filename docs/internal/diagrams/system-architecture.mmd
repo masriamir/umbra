@@ -7,7 +7,7 @@ flowchart TB
   subgraph RAILWAY["Railway Platform (Production)"]
     subgraph BUILD["Build Phase - Railpack"]
       B1["cd frontend && npm install\n+ npm run build → frontend/dist/"]
-      B2["uv run python manage.py collectstatic\n→ staticfiles/"]
+      B2["uv run python manage.py collectstatic --noinput\n→ staticfiles/"]
       B1 --> B2
     end
 
