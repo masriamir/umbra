@@ -630,7 +630,7 @@ The project is configured for one-command deployment to [Railway](https://railwa
 |---|---|
 | **Setup** | Railpack detects Python (from `.python-version`) and uv; Node.js 22 is installed from `railpack.json` |
 | **Install** | `uv sync --no-dev --frozen` installs backend dependencies into the virtual environment |
-| **Build** | Builds the React SPA (`cd frontend && npm install && npm run build`), then runs `python manage.py collectstatic` |
+| **Build** | Builds the React SPA (`cd frontend && npm install && npm run build`), then runs `uv run python manage.py collectstatic --noinput` |
 | **Start** | Runs `migrate` (idempotent), then starts Gunicorn on `$PORT` with 2 workers |
 
 The health check polls `GET /health/` with a 30-second timeout. If the service fails to start, Railway restarts it automatically (`restartPolicyType = "on_failure"`).

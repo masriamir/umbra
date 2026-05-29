@@ -6,8 +6,8 @@ flowchart TB
 
   subgraph RAILWAY["Railway Cloud Platform"]
     subgraph BUILD["Build Phase"]
-      B1["Compile React app to static files\nnpm run build → frontend/dist/"]
-      B2["Collect Django admin assets\nmanage.py collectstatic → staticfiles/"]
+      B1["Install frontend deps and compile React app\nnpm install + npm run build → frontend/dist/"]
+      B2["Collect Django admin assets\nuv run manage.py collectstatic → staticfiles/"]
       B1 --> B2
     end
 
