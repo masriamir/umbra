@@ -5,9 +5,9 @@ flowchart TB
   BROWSER["Browser\nReact SPA + React Router\nAuthContext · localStorage theme"]
 
   subgraph RAILWAY["Railway Platform (Production)"]
-    subgraph BUILD["Build Phase - Nixpacks"]
-      B1["npm ci + npm run build\n→ frontend/dist/"]
-      B2["uv run collectstatic\n→ staticfiles/"]
+    subgraph BUILD["Build Phase - Railpack"]
+      B1["cd frontend && npm install && npm run build\n→ frontend/dist/"]
+      B2["uv run python manage.py collectstatic --noinput\n→ staticfiles/"]
       B1 --> B2
     end
 

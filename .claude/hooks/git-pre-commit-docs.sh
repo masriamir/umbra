@@ -50,7 +50,7 @@ if has_undocumented_change '^frontend/src/(App|main)\.jsx'; then
   WARNINGS+=("App shell change → all four frontend-*.mmd diagrams")
 fi
 
-if has_undocumented_change '^railway\.toml|^nixpacks\.toml|^umbra/settings\.py'; then
+if has_undocumented_change '^railway\.toml|^railpack\.json|^umbra/settings\.py'; then
   WARNINGS+=("Infrastructure change → docs/*/diagrams/system-architecture.mmd")
 fi
 

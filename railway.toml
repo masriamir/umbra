@@ -1,5 +1,5 @@
 [build]
-builder = "nixpacks"
+builder = "RAILPACK"
 # Build the React SPA, then collect Django static files. Both outputs are
 # required before the server starts: WhiteNoise serves the SPA from
 # frontend/dist/ and Django admin assets from staticfiles/.
