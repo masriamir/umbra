@@ -1,0 +1,15 @@
+[environment]
+python-version = "3.13"
+
+[src]
+exclude = ["**/migrations/**", "tests/**"]
+respect-ignore-files = true
+
+[rules]
+unresolved-attribute = "ignore"
+
+[[overrides]]
+include = ["todo/ics.py"]
+[overrides.rules]
+invalid-argument-type = "ignore"
+unsupported-operator = "ignore"
