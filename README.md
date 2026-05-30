@@ -114,7 +114,7 @@ A TODO web application designed to aid people with ADHD who experience disrupted
 | Tool | Purpose |
 |---|---|
 | Ruff | Python linting and formatting |
-| Mypy (strict) | Python static type checking |
+| ty | Python static type checking |
 | Pytest | Backend testing |
 | ESLint | Frontend linting |
 | Vitest + RTL + MSW | Frontend testing |
@@ -168,7 +168,7 @@ umbra/
 │
 ├── Makefile                # Developer convenience commands
 ├── pyproject.toml          # Python project metadata and dependencies
-├── mypy.ini                # Mypy configuration
+├── ty.toml                 # ty type checker configuration
 ├── pytest.toml             # Pytest configuration
 ├── railway.toml            # Railway deployment configuration
 ├── railpack.json           # Railpack config — declares Node.js 22 for the frontend build
@@ -317,7 +317,7 @@ make lint               # ruff check (report only)
 make lint-fix           # ruff check --fix (auto-fix safe issues)
 make format             # ruff format (reformat files)
 make format-check       # ruff format --check (check only)
-make typecheck          # mypy static type check
+make typecheck          # ty static type check
 ```
 
 ### Versioning
@@ -467,7 +467,7 @@ The project enforces strict code quality standards following Google style conven
 |---|---|---|
 | Ruff (lint + docstyle) | `pyproject.toml` — line-length 88, double quotes, Google docstring convention | `make lint` |
 | Ruff (format) | `pyproject.toml` | `make format` |
-| Mypy | `mypy.ini` — strict mode, Python 3.14 | `make typecheck` |
+| ty | `ty.toml` — Python 3.14, Django ORM false positives suppressed | `make typecheck` |
 | pytest-cov | `.coveragerc.toml` — branch coverage, 80% minimum, `reports/coverage/` | `make test-cov` |
 
 Run all checks at once (read-only, no files modified):
