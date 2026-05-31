@@ -46,7 +46,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.12,<1.0.0",  # Linting and formatting
+    "ruff>=0.15.15,<1.0.0",  # Linting and formatting
     "ty>=0.0.40,<0.1.0",  # Type checking
     "bandit>=1.9.4,<2.0.0",  # Security analysis
 ]
