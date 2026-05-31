@@ -52,7 +52,7 @@ Global throttle rates: `anon` 20/min, `user` 300/min, `login` 5/min.
 
 **Ruff config:** line-length=88, double quotes, no preview mode. Active rule sets: S, B, A, COM, C4, T20, PTH, I, C90, N, E, W, F, D, PL, UP, RUF. Docstyle convention: `google`. Globally ignored: E501, COM812, RUF012, D105, D107.
 
-**Mypy:** strict mode enabled, Python 3.14 target, migrations excluded.
+**ty:** strict type checking, Python 3.14 target, migrations and tests excluded. `unresolved-attribute` suppressed within `todo/**` (Django ORM has no type stubs); `invalid-argument-type` and `unsupported-operator` additionally suppressed in `todo/ics.py` for Django field descriptor false positives. All rules active outside `todo/`.
 
 ## Testing
 

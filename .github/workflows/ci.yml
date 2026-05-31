@@ -62,7 +62,7 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Run type checking
-        run: uv run mypy .
+        run: uv run ty check .
 
       - name: Collect static files
         run: uv run python manage.py collectstatic --noinput

@@ -35,7 +35,7 @@ updates:
       dev-dependencies:
         patterns:
           - "ruff*"
-          - "mypy*"
+          - "ty*"
           - "bandit*"
           - "pre-commit*"
         update-types:

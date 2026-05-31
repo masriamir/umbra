@@ -4,7 +4,7 @@ SHELL         := /bin/bash
 PYTHON  := uv run python
 PYTEST  := uv run pytest
 RUFF    := uv run ruff
-MYPY    := uv run mypy
+TY      := uv run ty
 
 # ── Help ───────────────────────────────────────────────────────────────────────
 
@@ -121,7 +121,7 @@ ci-backend: ## Run all backend CI steps locally (mirrors GitHub Actions — requ
 	uv sync --all-groups
 	$(RUFF) check .
 	$(RUFF) format --check .
-	$(MYPY) .
+	$(TY) check .
 	DEBUG=False $(PYTHON) manage.py collectstatic --noinput
 	DEBUG=False $(PYTEST)
 
@@ -153,8 +153,8 @@ format-check: ## Check Python formatting without modifying files
 	$(RUFF) format --check .
 
 .PHONY: typecheck
-typecheck: ## Run mypy static type checker
-	$(MYPY) .
+typecheck: ## Run ty static type checker
+	$(TY) check .
 
 .PHONY: check
 check: lint format-check typecheck ## Run all quality checks (no files modified)
@@ -204,7 +204,7 @@ build: ## Build the frontend for production
 
 .PHONY: clean
 clean: ## Remove build artifacts and caches
-	rm -rf frontend/dist .mypy_cache .ruff_cache .pytest_cache .coverage .coverage.* reports/
+	rm -rf frontend/dist .ruff_cache .pytest_cache .coverage .coverage.* reports/
 	@find . -not -path "./.venv/*" -type d -name "__pycache__" \
 		-exec rm -rf {} + 2>/dev/null || true
 

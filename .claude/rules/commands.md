@@ -73,7 +73,7 @@ make lint               # ruff check (report only)
 make lint-fix           # ruff check --fix
 make format             # ruff format
 make format-check       # ruff format --check
-make typecheck          # mypy
+make typecheck          # ty
 ```
 
 ## Build & Clean

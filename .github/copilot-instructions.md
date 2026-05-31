@@ -47,11 +47,11 @@ Backend tests need `DATABASE_URL` or `DB_*` environment variables set in `.env`.
 ## Code quality — must pass before every PR
 
 ```bash
-make check    # ruff check + ruff format --check + mypy (read-only)
+make check    # ruff check + ruff format --check + ty (read-only)
 make fix      # ruff check --fix + ruff format (auto-fix linting and formatting)
 ```
 
-All three gates must pass with zero errors. mypy runs in `strict` mode.
+All three gates must pass with zero errors. ty enforces strict type checking.
 
 ## Django management
 
