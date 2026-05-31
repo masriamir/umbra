@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Style guides:** Follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) for Python and the [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html) for JavaScript. All public modules, packages, classes, and functions must have Google-style docstrings.
 
-**Type annotations:** All Python code must carry complete type annotations — `ty` enforces strict type checking (`unresolved-attribute` is suppressed globally and `invalid-argument-type`/`unsupported-operator` are suppressed in `todo/ics.py`, all due to missing Django stubs; all other rules are active). Use modern union syntax (`X | None`, `list[str]`, `dict[str, int]`) rather than `Optional`, `List`, `Dict` from `typing`. Never leave a function untyped or return `Any` without explicit justification.
+**Type annotations:** All Python code must carry complete type annotations — `ty` enforces strict type checking (`unresolved-attribute` is suppressed within `todo/**` and `invalid-argument-type`/`unsupported-operator` are suppressed in `todo/ics.py`, all due to missing Django stubs; all other rules are active everywhere). Use modern union syntax (`X | None`, `list[str]`, `dict[str, int]`) rather than `Optional`, `List`, `Dict` from `typing`. Never leave a function untyped or return `Any` without explicit justification.
 
 **Python linting rules (ruff):** The following rule sets are active — keep them in mind when generating code:
 - **No `print()` calls** (T20) — use `logging` instead.

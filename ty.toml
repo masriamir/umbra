@@ -5,7 +5,9 @@ python-version = "3.14"
 exclude = ["**/migrations/**", "tests/**"]
 respect-ignore-files = true
 
-[rules]
+[[overrides]]
+include = ["todo/**"]
+[overrides.rules]
 unresolved-attribute = "ignore"
 
 [[overrides]]
