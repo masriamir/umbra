@@ -8,7 +8,7 @@ The project uses `uv` for package management and `ruff` for linting and formatti
 
 Astral released `ty`, a Rust-based Python type checker designed to complement `uv` and `ruff`. Consolidating on a single toolchain vendor reduces configuration surface, speeds up the type-checking step, and keeps the dependency graph smaller.
 
-The primary compatibility gap at migration time (ty 0.0.40) is Django: ty does not yet have Django stubs, so `.objects` manager access and model field descriptors produce false-positive `unresolved-attribute` errors. These are suppressed in `ty.toml`; all other rules run at full severity.
+The primary compatibility gap at migration time (ty 0.0.40) is Django: ty does not yet have Django stubs. This surfaces two categories of false positives: `.objects` manager access (and similar ORM attributes) triggers `unresolved-attribute` errors across the codebase; Django model field descriptors typed as their field classes rather than their Python runtime equivalents (`DateTimeField` instead of `datetime`, `CharField` instead of `str`, etc.) trigger `invalid-argument-type` and `unsupported-operator` errors in `todo/ics.py`.
 
 ## Decision
 
@@ -20,5 +20,5 @@ Replace mypy with ty as the project's sole static type checker. Configuration li
 - **Unified toolchain:** uv + ruff + ty are all Astral projects with compatible configuration conventions.
 - **Reduced deps:** `mypy`, its extensions, and `types-aiofiles` are removed from the dev dependency group.
 - **Alpha risk:** ty is pre-1.0. Its configuration schema and rule set may change between releases. The version is pinned to `>=0.0.40,<1.0.0` to avoid unexpected breaking changes.
-- **Suppressed Django errors:** `unresolved-attribute` is globally suppressed. This means genuine attribute errors on Django model instances will not be caught until ty gains Django stubs support. This is the same posture as the previous `ignore_missing_imports = True` approach in mypy.ini, which also relied on django-stubs being present to catch ORM issues.
-- **mypy-specific options dropped:** Several mypy.ini flags have no ty equivalent (`disallow_untyped_calls`, `show_traceback`, `raise_exceptions`, `warn_incomplete_stub`, `exclude_gitignore`). These are accepted gaps; the effective strictness of the checks is equivalent.
+- **Suppressed Django errors:** `unresolved-attribute` is globally suppressed, and `invalid-argument-type` / `unsupported-operator` are suppressed in `todo/ics.py`. This means genuine attribute errors on Django model instances will not be caught until ty gains Django stubs support. The previous mypy setup had the same blind spot: `django-stubs` was never a project dependency, so mypy also could not see Django ORM attributes — it silently ignored them via `ignore_missing_imports = True`.
+- **mypy-specific options dropped:** Several mypy.ini flags have no ty equivalent (`disallow_untyped_calls`, `show_traceback`, `raise_exceptions`, `warn_incomplete_stub`). These are accepted gaps; the effective strictness of the checks is equivalent. (`exclude_gitignore` does have an equivalent: `respect-ignore-files = true` in `ty.toml`.)
