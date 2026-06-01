@@ -1,0 +1,74 @@
+name: Maintenance
+description: Tooling, refactoring, dependency updates, or other non-feature housekeeping work.
+title: "[Maintenance]: "
+labels:
+  - maintenance
+assignees:
+  - masriamir
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for maintenance tasks: tooling changes, refactors, dependency upgrades, CI/CD work, or other housekeeping that does not add user-visible functionality.
+
+  - type: textarea
+    id: task-description
+    attributes:
+      label: Task description
+      description: What needs to be done, and what is the current state that motivates the change?
+      placeholder: Currently X is configured in Y. We want to move it to Z because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this change worth doing? What problem does the current state cause?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is explicitly in scope and out of scope for this task?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the project does this affect?
+      options:
+        - Tooling / CI·CD
+        - Dependencies
+        - Code quality
+        - Documentation
+        - Testing
+        - Security
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: How will we know this task is complete? List the conditions that must be true.
+      placeholder: |
+        - [ ] ruff.toml exists at the repo root and contains all ruff configuration
+        - [ ] pyproject.toml no longer contains any [tool.ruff] sections
+        - [ ] `make check` passes with no regressions
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to documentation, related issues, ADRs, or prior art.
+    validations:
+      required: false
